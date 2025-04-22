@@ -16,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "user", schema = "orders")
+@Table(name = "purchase", schema = "orders")
 public class Purchase {
 
     @Id
@@ -34,6 +34,6 @@ public class Purchase {
     @Column(name = "purchase_time", nullable = true, length = 50)
     private String purchaseTime;
 
-    //@OneToMany(mappedBy = "purchase", cascade = CascadeType.MERGE)
-    //private List<ProductInPurchase> productsInPurchase;
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.MERGE)
+    private List<ProductInPurchase> productsInPurchase;
 }

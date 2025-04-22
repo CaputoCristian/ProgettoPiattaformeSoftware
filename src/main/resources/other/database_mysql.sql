@@ -20,7 +20,7 @@ CREATE TABLE product_in_shop (
     type VARCHAR(50), --Ricerca per tipologia (tipi predefiniti) //TODO
     description VARCHAR(500),
 	price FLOAT,
-    quantity FLOAT,
+    quantity INTEGER,
     sold_by INTEGER,
     FOREIGN KEY (sold_by) REFERENCES shop (id)
 );
@@ -32,7 +32,7 @@ CREATE TABLE purchase (
     FOREIGN KEY (buyer) REFERENCES user (id)
 );
 
-CREATE TABLE product_in_purchase ( --Separato da purchase per gestire acquisti con più prodotto
+CREATE TABLE product_in_purchase ( --Separato da purchase per gestire acquisti con più prodotti
 	id INTEGER AUTO_INCREMENT PRIMARY KEY,
 	related_purchase INTEGER,
 	product INTEGER,
