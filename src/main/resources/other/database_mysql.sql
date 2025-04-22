@@ -10,16 +10,22 @@ CREATE TABLE user (
 	telephone_number VARCHAR(20),
 	email VARCHAR(90),
 	address VARCHAR(150),
-    birth_date DATE -format DD-MM-YYYY
+    birth_date DATE
 );
 
-CREATE TABLE product_in_shop (
+CREATE TABLE shop (     --Ogni utente può mettere in vendita i propri prodotti
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    seller INTEGER,
+    FOREIGN KEY (seller) REFERENCES user (id)
+);
+
+CREATE TABLE product (
 	id INTEGER AUTO_INCREMENT PRIMARY KEY,
 	name VARCHAR(50),
     brand VARCHAR(50),
-    type VARCHAR(50), --Ricerca per tipologia (tipi predefiniti) //TODO
+    product_type VARCHAR(50), --Ricerca per tipologia (tipi predefiniti) //TODO
     description VARCHAR(500),
-	price FLOAT,
+	price FLOAT, --Usare DECIMAL? Evita problemi di precisione
     quantity INTEGER,
     sold_by INTEGER,
     FOREIGN KEY (sold_by) REFERENCES shop (id)
@@ -41,18 +47,16 @@ CREATE TABLE product_in_purchase ( --Separato da purchase per gestire acquisti c
     FOREIGN KEY (product) REFERENCES product (id)
 );
 
-CREATE TABLE shop (     --Ogni utente può mettere in vendita i propri prodotti
-    id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    seller INTEGER,
-    FOREIGN KEY (seller) REFERENCES user (id)
-);
-
 CREATE TABLE review (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    buyer INTEGER,
-    product INTEGER,
+    user_id INTEGER,
+    purchase_id INTEGER,
+    product_id INTEGER,
     vote  INTEGER, CHECK (vote >= 0 AND vote <= 5),
     message VARCHAR(500),
-    FOREIGN KEY (buyer) REFERENCES purchase (id),
-    FOREIGN KEY (product) REFERENCES product_in_purchase (id)
+    --buyer INTEGER,
+    --FOREIGN KEY (buyer) REFERENCES purchase (id),
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (purchase_id) REFERENCES purchase (id),
+    FOREIGN KEY (product_id) REFERENCES product (id)
 );

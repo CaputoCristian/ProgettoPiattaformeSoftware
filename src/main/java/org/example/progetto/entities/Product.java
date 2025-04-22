@@ -11,7 +11,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "product_in_shop", schema = "orders")
+@Table(name = "product", schema = "orders")
 
 public class Product {
 
@@ -29,7 +29,7 @@ public class Product {
     private String brand;
 
     @Basic
-    @Column(name = "type", nullable = true, length = 50)
+    @Column(name = "product_type", nullable = true, length = 50)
     private String type;
 
     @Basic
