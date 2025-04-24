@@ -60,3 +60,4 @@ CREATE TABLE review (
     FOREIGN KEY (purchase_id) REFERENCES purchase (id),
     FOREIGN KEY (product_id) REFERENCES product (id)
 );
+-- TODO Chat e proposte di prezzo?
