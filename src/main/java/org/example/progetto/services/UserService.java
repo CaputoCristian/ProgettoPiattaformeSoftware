@@ -1,16 +1,13 @@
 package org.example.progetto.services;
 
 import org.example.progetto.entities.User;
+import org.example.progetto.exceptions.CfAlreadyExistException;
+import org.example.progetto.exceptions.EmailAlreadyExistException;
 import org.example.progetto.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service("productService")
@@ -26,7 +23,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public void addUser(User user) throws EmailAlreadyExistException, CfAlreadyExistException{
+    public void addUser(User user) throws EmailAlreadyExistException, CfAlreadyExistException {
         if (userRepository.existsByCf(user.getCf())) {
             throw new EmailAlreadyExistException();
         }

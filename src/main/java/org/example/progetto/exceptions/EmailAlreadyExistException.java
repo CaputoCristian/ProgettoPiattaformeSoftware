@@ -1,4 +1,4 @@
-package org.example.progetto.services;
+package org.example.progetto.exceptions;
 
 public class EmailAlreadyExistException extends Exception {
 }
