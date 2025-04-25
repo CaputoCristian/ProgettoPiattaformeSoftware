@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByType(String type);
-    List<Product> findByName(String name);
+    List<Product> findByNameContaining(String name);
     List<Product> findByPriceBetween(Float minPrice, Float maxPrice);
     List<Product> findById(Integer id);
 }
