@@ -12,4 +12,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByNameContaining(String name);
     List<Product> findByPriceBetween(Float minPrice, Float maxPrice);
     List<Product> findById(Integer id);
+    void deleteById(Integer id);
 }

@@ -22,8 +22,8 @@ public class Shop {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "seller")
+    @OneToOne
+    @JoinColumn(name = "user_id")
     private User seller;
 
     @OneToMany(mappedBy = "soldBy")

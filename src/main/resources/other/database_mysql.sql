@@ -1,6 +1,6 @@
-DROP SCHEMA orders;
-CREATE SCHEMA orders;
-USE orders;
+-- DROP SCHEMA orders;
+-- CREATE SCHEMA orders;
+-- USE orders;
 
 CREATE TABLE user (
 	id INTEGER AUTO_INCREMENT PRIMARY KEY,
