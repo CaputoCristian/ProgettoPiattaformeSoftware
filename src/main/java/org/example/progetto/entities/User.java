@@ -56,5 +56,4 @@ public class User {
     @JsonIgnore
     private List<Purchase> purchases;
 
-
 }
