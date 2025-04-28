@@ -3,6 +3,7 @@ package org.example.progetto.services;
 import org.example.progetto.entities.User;
 import org.example.progetto.exceptions.CfAlreadyExistException;
 import org.example.progetto.exceptions.EmailAlreadyExistException;
+import org.example.progetto.repositories.ShopRepository;
 import org.example.progetto.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
+    //private ShopRepository shopRepository;
     @Transactional(readOnly = true)     // Non dare accesso all'utente?
     public List<User> showAllUsers() {
         return userRepository.findAll();
@@ -32,5 +33,4 @@ public class UserService {
         }
         userRepository.save(user);
     }
-
 }
