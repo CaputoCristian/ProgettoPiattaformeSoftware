@@ -1,4 +1,35 @@
 package org.example.progetto.controllers;
 
+
+import org.example.progetto.entities.User;
+import org.example.progetto.exceptions.EmailAlreadyExistException;
+import org.example.progetto.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+// import jakarta.validation.Valid; Controllare a cosa serve
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/users")
 public class UserController {
+    @Autowired
+    private UserService userService;
+
+    @PostMapping
+    public ResponseEntity addUser(@RequestBody User user) {
+        try {
+            User addedUser = userService.addUser(user); //Non serve tornare l'utente se si ha il .ok (lazy method)
+            return ResponseEntity.ok(addedUser);
+        } catch (EmailAlreadyExistException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @GetMapping
+    public List<User> showAllUsers() {
+        return userService.showAllUsers();
+    }
+
 }

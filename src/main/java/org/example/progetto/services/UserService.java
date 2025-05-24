@@ -3,7 +3,6 @@ package org.example.progetto.services;
 import org.example.progetto.entities.User;
 import org.example.progetto.exceptions.CfAlreadyExistException;
 import org.example.progetto.exceptions.EmailAlreadyExistException;
-import org.example.progetto.repositories.ShopRepository;
 import org.example.progetto.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public void addUser(User user) throws EmailAlreadyExistException, CfAlreadyExistException {
+    public User addUser(User user) throws EmailAlreadyExistException, CfAlreadyExistException {
         if (userRepository.existsByCf(user.getCf())) {
             throw new EmailAlreadyExistException();
         }
@@ -32,5 +31,6 @@ public class UserService {
             throw new CfAlreadyExistException();
         }
         userRepository.save(user);
+        return user;
     }
 }
