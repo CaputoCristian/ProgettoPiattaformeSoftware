@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service("productService")
+@Service("userService")
 @Transactional
 public class UserService {
 

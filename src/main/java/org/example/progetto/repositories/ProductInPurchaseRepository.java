@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface ProductInPurchaseRepository extends JpaRepository<ProductInPurchase, Long> {
     List<ProductInPurchase> findByRelatedPurchase_Id(Long purchaseId);
-    List<ProductInPurchase> findByProductsInPurchase_Id(Long purchaseId);
-    List<ProductInPurchase> findByTimeBetween(Date startTime, Date endTime);
+    List<ProductInPurchase> findProductInPurchaseById(Long purchaseId);
+    List<ProductInPurchase> findByRelatedPurchase_TimeBetween(Date startTime, Date endTime);
 }

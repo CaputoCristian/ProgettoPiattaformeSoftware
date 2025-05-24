@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -31,9 +32,9 @@ public class Purchase {
     @Basic
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "purchase_time", nullable = true, length = 50)
-    private String purchaseTime;
+    @Column(name = "time", nullable = false, length = 50)
+    private LocalDateTime time;
 
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "id", cascade = CascadeType.MERGE)
     private List<ProductInPurchase> productsInPurchase;
 }

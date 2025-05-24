@@ -26,6 +26,6 @@ public class Shop {
     @JoinColumn(name = "seller")
     private User seller;
 
-    @OneToMany(mappedBy = "soldBy")
+    @OneToMany(mappedBy = "id")
     private List<Product> products;
 }
