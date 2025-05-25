@@ -2,7 +2,10 @@ package org.example.progetto.services;
 
 
 //import jakarta.transaction.Transactional;
+import org.example.progetto.DTO.ProductUpdateRequest;
+import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.Product;
+import org.example.progetto.entities.User;
 import org.example.progetto.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,8 +31,9 @@ public class ProductService {
     }
 
     @Transactional(readOnly = false)
-    public void addProduct(Product product) {
+    public Product addProduct(Product product) {
         productRepository.save(product);
+        return product;
     }
 
     @Transactional(readOnly = true)
@@ -57,6 +61,21 @@ public class ProductService {
     @Transactional(readOnly = true)
     public List<Product> showProductsByType(String type) {
         return productRepository.findByType(type);
+    }
+
+    @Transactional(readOnly = false)
+    public Product updateProduct(Long productId, ProductUpdateRequest updateRequest) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Prodotto non trovato"));
+
+        product.setName(updateRequest.getName ());
+        product.setBrand(updateRequest.getBrand());
+        product.setDescription(updateRequest.getDescription());
+        product.setPrice(updateRequest.getPrice());
+        product.setQuantity(updateRequest.getQuantity());
+        product.setType(updateRequest.getType());
+
+        return productRepository.save(product);
     }
 
 }

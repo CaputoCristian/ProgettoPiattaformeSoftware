@@ -1,10 +1,13 @@
 package org.example.progetto.controllers;
 
 
+import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.User;
+import org.example.progetto.exceptions.CfAlreadyExistException;
 import org.example.progetto.exceptions.EmailAlreadyExistException;
 import org.example.progetto.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +26,25 @@ public class UserController {
         try {
             User addedUser = userService.addUser(user); //Non serve tornare l'utente se si ha il .ok (lazy method)
             return ResponseEntity.ok(addedUser);
-        } catch (EmailAlreadyExistException e) {
-            throw new RuntimeException(e);
+        } catch (EmailAlreadyExistException | CfAlreadyExistException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+
     }
     @GetMapping
-    public List<User> showAllUsers() {
+    public List<User> showAllUsers () {
         return userService.showAllUsers();
     }
 
+    @GetMapping("/{id}")
+    public User showUser(@PathVariable Integer id) {
+        return userService.showById(id);
+    }
+
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<User> updateProfile(@PathVariable Long id,
+                                              @RequestBody UserUpdateRequest request) {
+        User updatedUser = userService.updateUserProfile(id, request);
+        return ResponseEntity.ok(updatedUser);
+    }
 }

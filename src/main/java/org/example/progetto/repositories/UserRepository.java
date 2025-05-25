@@ -11,7 +11,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByFirstName(String firstName);
     List<User> findByLastName(String lastName);
     List<User> findByFirstNameAndLastName(String firstName, String lastName);
-    List<User> findById(Integer id);
+    User findById(Integer id);
     boolean existsById(Integer id);
     boolean existsByEmail(String email);
     boolean existsByCf(String cf);

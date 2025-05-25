@@ -1,5 +1,7 @@
 package org.example.progetto.services;
 
+import org.apache.logging.log4j.message.Message;
+import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.User;
 import org.example.progetto.exceptions.CfAlreadyExistException;
 import org.example.progetto.exceptions.EmailAlreadyExistException;
@@ -25,12 +27,32 @@ public class UserService {
     @Transactional(readOnly = false)
     public User addUser(User user) throws EmailAlreadyExistException, CfAlreadyExistException {
         if (userRepository.existsByCf(user.getCf())) {
-            throw new EmailAlreadyExistException();
+            throw new EmailAlreadyExistException("Email already exist");
         }
         if (userRepository.existsByCf(user.getCf())) {
-            throw new CfAlreadyExistException();
+            throw new CfAlreadyExistException("CF already exist");
         }
         userRepository.save(user);
         return user;
     }
+
+    @Transactional(readOnly = true)     // Non dare accesso all'utente?
+    public User showById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+    @Transactional(readOnly = false)
+    public User updateUserProfile(Long userId, UserUpdateRequest updateRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utente non trovato"));
+
+        user.setFirstName(updateRequest.getFirstName ());
+        user.setLastName(updateRequest.getLastName ());
+        user.setTelephoneNumber(updateRequest.getTelephoneNumber());
+        user.setAddress(updateRequest.getAddress());
+        user.setBirthDate(updateRequest.getBirthDate());
+
+        return userRepository.save(user);
+    }
+
 }
