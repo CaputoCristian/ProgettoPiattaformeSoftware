@@ -22,7 +22,7 @@ public class Shop {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "seller")
     private User seller;
 

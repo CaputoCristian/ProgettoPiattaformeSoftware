@@ -21,7 +21,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
+    @PostMapping("/test")
     public ResponseEntity addUser(@RequestBody User user) {
         try {
             User addedUser = userService.addUser(user); //Non serve tornare l'utente se si ha il .ok (lazy method)
@@ -31,7 +31,7 @@ public class UserController {
         }
 
     }
-    @GetMapping
+    @GetMapping("/test")
     public List<User> showAllUsers () {
         return userService.showAllUsers();
     }
