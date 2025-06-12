@@ -11,9 +11,10 @@
                         Home
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Purchases</a></li>
-                        <li><a class="dropdown-item" href="#">Reviews</a></li>
+                        <li><a class="dropdown-item" routerLink="/userProfile">Profile</a></li>
+                        <li><a class="dropdown-item" routerLink="/purchase">Purchases</a></li>
+                        <li><a class="dropdown-item" routerLink="/review">Reviews</a></li>
+                        <li><a class="dropdown-item" routerLink="/admin">Admin Dashboard</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -22,8 +23,10 @@
             </ul>
             <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                <button class="btn btn-outline-success" type="submit">Search</button>
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
             </form>
+          <button class="btn btn-success" routerLink="/login">Login</button>
+          <button class="btn btn-danger" >Logout</button>
         </div>
     </div>
 </nav>
