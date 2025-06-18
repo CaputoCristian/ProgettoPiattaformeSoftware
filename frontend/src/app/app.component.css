@@ -1,0 +1,18 @@
+.main-container {
+  display: flex;
+  height: calc(100vh - 60px); /* escludi header se alto 60px */
+}
+
+.content {
+  flex: 4; /* 4/5 della larghezza */
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.cart {
+  flex: 1; /* 1/5 della larghezza */
+  background-color: #f4f4f4;
+  border-left: 1px solid #ccc;
+  padding: 1rem;
+  overflow-y: auto;
+}

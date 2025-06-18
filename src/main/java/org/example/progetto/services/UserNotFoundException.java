@@ -1,4 +1,6 @@
 package org.example.progetto.services;
 
-public class UserNotFoundException {
+public class UserNotFoundException extends Exception {
+    public UserNotFoundException(String s) {
+    }
 }

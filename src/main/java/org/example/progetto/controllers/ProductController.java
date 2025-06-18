@@ -20,7 +20,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @PostMapping
+    @PostMapping("/addProduct")
     public ResponseEntity addProduct(@RequestBody Product product) {
         try {
             Product addedProduct = productService.addProduct(product); //Non serve tornare l'utente se si ha il .ok (lazy method)

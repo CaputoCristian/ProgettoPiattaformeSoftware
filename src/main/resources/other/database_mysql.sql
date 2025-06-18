@@ -61,3 +61,20 @@ CREATE TABLE review (
     FOREIGN KEY (product_id) REFERENCES product (id)
 );
 /* TODO Chat e proposte di prezzo? */
+
+CREATE TABLE cart (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    user_id INTEGER NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    total_price DECIMAL(10, 2) DEFAULT 0.00,
+    FOREIGN KEY (user_id) REFERENCES user (id)
+);
+
+CREATE TABLE product_in_cart (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    cart_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    FOREIGN KEY (cart_id) REFERENCES cart (id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product (id)
+);

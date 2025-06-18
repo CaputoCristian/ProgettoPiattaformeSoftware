@@ -1,0 +1,28 @@
+
+<div>
+  <div class="product-container">
+    <div class="product-card" *ngFor="let product of prodotti; let i = index">
+      <div class="product-details">
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p>Prezzo: €{{ product.price}}</p>
+        <p>Quantità Disponibile: {{ product.quantity }}</p>
+
+        <div class="quantity-selector">
+          <label for="quantity-{{i}}">Quantità:</label>
+          <input
+            id="quantity-{{i}}"
+            type="number"
+            [value]="quantities[i]"
+            min="1"
+            [max]="product.quantity"
+            (change)="onQuantityChange($event, i)"
+          >
+        </div>
+
+        <button class="add-to-cart" (click)="addToCart(product.id, quantities[i])">
+          Aggiungi al Carrello
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

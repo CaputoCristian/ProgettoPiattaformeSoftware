@@ -31,3 +31,10 @@ build/
 
 ### VS Code ###
 .vscode/
+
+keycloak-26.2.5/
+*.log
+*.class
+target/
+build/
+node_modules/
