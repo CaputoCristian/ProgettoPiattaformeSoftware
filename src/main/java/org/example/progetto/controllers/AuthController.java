@@ -20,7 +20,7 @@ import java.util.Map;
 
 @RestController
 
-@CrossOrigin( //Controlla uso
+@CrossOrigin(
         origins = "http://localhost:4200",
         allowedHeaders = "*",
         methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }

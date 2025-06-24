@@ -96,7 +96,7 @@ public class CartService {
 
         // Controllo se il prodotto è già presente nel carrello
 
-        ProductInCart cp = productInCartRepository.findByCarrelloAndProdotto(cart,prod);
+        ProductInCart cp = productInCartRepository.findByCartAndProduct(cart,prod);
         if (cp != null) {
             // Lock dell'elemento del carrello
             entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
@@ -141,7 +141,7 @@ public class CartService {
         entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
 
         // Recupero e locko l'elemento del carrello
-        ProductInCart cp = productInCartRepository.findByCarrelloAndProdottoId(carrello, idProdotto);
+        ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, idProdotto);
         if (cp == null) {
             throw new InvalidOperationException("Il prodotto non è presente nel carrello.");
         }
@@ -181,7 +181,7 @@ public class CartService {
         entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
 
         // Recupero e locko l'elemento del carrello
-        ProductInCart cp = productInCartRepository.findByCarrelloAndProdottoId(carrello, prodottoID);
+        ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, prodottoID);
         if (cp == null) {
             throw new InvalidOperationException("Il prodotto non è presente nel carrello.");
         }
@@ -210,7 +210,7 @@ public class CartService {
         entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
 
         // Recupero e locko l'elemento del carrello
-        ProductInCart cp = productInCartRepository.findByCarrelloAndProdottoId(carrello, idProdotto);
+        ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, idProdotto);
         if (cp == null) {
             throw new InvalidOperationException("Il prodotto non è presente nel carrello.");
         }
@@ -244,13 +244,13 @@ public class CartService {
         entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
 
         // Recupero e locko tutti gli elementi del carrello
-        Set<ProductInCart> cartProducts = productInCartRepository.findByCarrelloId(carrello.getIdCarrello());
+        Set<ProductInCart> cartProducts = productInCartRepository.findByCartId(carrello.getIdCarrello());
         for (ProductInCart cp : cartProducts) {
             entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
         }
 
         // Svuoto il carrello
-        productInCartRepository.deleteAllByCarrello(carrello);
+        productInCartRepository.deleteAllByCart(carrello);
     }
 
 //    @Transactional

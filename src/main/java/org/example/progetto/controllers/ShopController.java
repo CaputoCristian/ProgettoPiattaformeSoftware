@@ -18,6 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin(
+        origins = "http://localhost:4200",
+        allowedHeaders = "*",
+        methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
+)
 @RequestMapping("/shop")
 public class ShopController {
 

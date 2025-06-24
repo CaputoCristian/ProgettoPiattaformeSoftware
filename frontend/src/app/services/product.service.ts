@@ -14,6 +14,13 @@ export class ProductService {
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) {
   }
 
+  private getHeaders(): HttpHeaders {
+    const token = this.oauthService.getAccessToken();
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   getAllProducts(): Observable<Product[]> {
     const token = this.oauthService.getAccessToken();
     const headers = new HttpHeaders({
@@ -31,5 +38,17 @@ export class ProductService {
 
     return this.httpClient.get<Product>(`${this.baseUrl}/${id}`, {headers});
   }
+
+  addProduct(prodotto: Product): Observable<any> {
+    const params = { prodotto: prodotto.toString()};
+    return this.httpClient.put(`${this.baseUrl}/add`, null, { headers: this.getHeaders(), params });
+  }
+
+  editProduct(prodotto: Product): Observable<any> {
+    const params = { prodotto: prodotto.toString()};
+    return this.httpClient.post(`${this.baseUrl}/${prodotto.id}`, null, { headers: this.getHeaders(), params });
+  }
+
+
 
 }

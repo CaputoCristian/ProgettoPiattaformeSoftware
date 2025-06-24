@@ -12,11 +12,11 @@ import java.util.Set;
 @Repository
 public interface ProductInCartRepository extends JpaRepository<ProductInCart, Integer> {
 
-    ProductInCart findByCarrelloAndProdotto(Cart carrello, Product prod);
-    ProductInCart findByCarrelloAndProdottoId(Cart carrello, int prod);
+    ProductInCart findByCartAndProduct(Cart cart, Product prod);
+    ProductInCart findByCartAndProductId(Cart cart, int prod);
 
     @Query("SELECT cp FROM ProductInCart cp WHERE cp.cart.idCarrello = :idCarrello")
-    Set<ProductInCart> findByCarrelloId(@Param("idCarrello") int idCarrello);
+    Set<ProductInCart> findByCartId(@Param("idCart") int idCart);
 
-    void deleteAllByCarrello(Cart carrello);
+    void deleteAllByCart(Cart cart);
 }

@@ -9,7 +9,7 @@ import {HomepageComponent} from './homepage/homepage.component';
 import {ProductComponent} from './product/product.component';
 
 export const routes: Routes = [
-  { path: 'a', component:HomepageComponent, canActivate: [AuthGuard]},
+  { path: 'products', component:HomepageComponent, canActivate: [AuthGuard]},
   { path: 'user', component:UserComponent},
   { path: 'admin', component:AdminComponent},
   { path: 'login', component:LoginComponent },

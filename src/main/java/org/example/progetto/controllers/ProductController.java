@@ -9,10 +9,16 @@ import org.example.progetto.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(
+        origins = "http://localhost:4200",
+        allowedHeaders = "*",
+        methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
+)
 @RestController
 @RequestMapping("/products")
 public class ProductController {
@@ -30,10 +36,13 @@ public class ProductController {
         }
     }
 
-    @GetMapping
-    public List<Product> showAllProducts() {
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/getall")
+    public List<Product> getAll() {
         return productService.showAllProducts();
     }
+
+
 
     @GetMapping("/paged")
     public ResponseEntity getAll(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, @RequestParam(value = "sortBy", defaultValue = "id") String sortBy) {

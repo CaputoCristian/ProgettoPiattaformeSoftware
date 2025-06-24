@@ -15,7 +15,7 @@ export interface CarrelloProdottoDTO {
 })
 export class CartService {
 
-  private baseUrl = 'http://localhost:8081/carrello';
+  private baseUrl = 'http://localhost:8081/cart'; //TODO controlla backend
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 

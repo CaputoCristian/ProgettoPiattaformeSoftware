@@ -3,12 +3,12 @@ import { AppComponent } from './app.component';
 import { provideRouter } from '@angular/router';
 import {routes} from './app.routes';
 import {AuthConfig, OAuthService, provideOAuthClient} from 'angular-oauth2-oidc';
-import {APP_INITIALIZER, ApplicationConfig} from '@angular/core';
-import {provideHttpClient} from '@angular/common/http';
+import {APP_INITIALIZER, ApplicationConfig, importProvidersFrom} from '@angular/core';
+import {HttpClientModule, provideHttpClient} from '@angular/common/http';
 import './app.config';
 
 bootstrapApplication(AppComponent, {
-  providers: [provideRouter(routes)],
+  providers: [provideRouter(routes), OAuthService, importProvidersFrom(HttpClientModule),],
 }).catch((err) => console.error(err));
 
 export const authCodeFlowConfig: AuthConfig = {
@@ -36,6 +36,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(),
     provideOAuthClient(),
+    provideHttpClient(),
     {
       provide: APP_INITIALIZER,
       useFactory: (oauthService: OAuthService) => {

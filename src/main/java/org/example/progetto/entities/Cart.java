@@ -34,7 +34,7 @@ public class Cart {
     @Column(name ="total_price", precision = 10, scale = 2)
     private BigDecimal prezzoTotale = BigDecimal.ZERO;
 
-    @OneToMany(mappedBy = "carrello", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<ProductInCart> carrelloProdottos = new LinkedHashSet<>();
 
 

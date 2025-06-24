@@ -1,15 +1,16 @@
 import {Component, OnInit} from '@angular/core';
 import {Router, RouterLink, RouterOutlet} from '@angular/router';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {filter} from 'rxjs';
 import {OAuthEvent, OAuthService} from 'angular-oauth2-oidc';
 import {NgIf} from '@angular/common';
 import {CartComponent} from './cart/cart.component';
 import {CartService} from './services/cart.service';
+import {HomepageComponent} from './homepage/homepage.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CartComponent],
+  imports: [RouterOutlet, RouterLink, CartComponent, HomepageComponent, HttpClientModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

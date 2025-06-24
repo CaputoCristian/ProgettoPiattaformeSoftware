@@ -1,5 +1,12 @@
+<div *ngIf="isLoading">
+  <p>Caricamento prodotti...</p>
+</div>
 
-<div>
+<div *ngIf="errorMessage">
+  <p>{{ errorMessage }}</p>
+</div>
+
+<div *ngIf="!isLoading && !errorMessage">
   <div class="product-container">
     <div class="product-card" *ngFor="let product of prodotti; let i = index">
       <div class="product-details">

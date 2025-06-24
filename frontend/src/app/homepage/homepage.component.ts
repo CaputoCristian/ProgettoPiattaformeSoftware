@@ -4,6 +4,7 @@ import { CartService } from '../services/cart.service';
 import {CommonModule, NgFor, NgIf} from '@angular/common';
 import { OAuthService } from 'angular-oauth2-oidc';
 import {Product} from '../models/product';
+import {provideHttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-home',
