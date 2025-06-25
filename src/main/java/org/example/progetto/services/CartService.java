@@ -60,7 +60,7 @@ public class CartService {
     private static final Random RANDOM = new Random();
 
     @Transactional
-    public void aggiungiAlCarrello(String idUtente, int idProdotto, int quantita)
+    public void addToCart(String idUtente, int idProdotto, int quantita)
             throws UserNotFoundException, ProductNotFoundException, InvalidQuantityException {
 
         // Recupero l'utente dal database.

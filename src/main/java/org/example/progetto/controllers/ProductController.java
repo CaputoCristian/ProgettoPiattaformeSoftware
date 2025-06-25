@@ -37,7 +37,7 @@ public class ProductController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/getall")
+    @GetMapping("")
     public List<Product> getAll() {
         return productService.showAllProducts();
     }
