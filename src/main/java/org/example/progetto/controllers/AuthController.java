@@ -16,6 +16,9 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,17 +66,66 @@ public class AuthController {
     @GetMapping("/home")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> home() {
-        var jwt = (CustomJwt) SecurityContextHolder.getContext().getAuthentication();
 
-        String email = jwt.getName();
-        User loggato = userRepository.findByEmail(email);
-        if (loggato == null) {
-            User nuovo = new User();
-            nuovo.setEmail(email);
-            nuovo.setFirstName(jwt.getFirstName());
-            nuovo.setLastName(jwt.getLastName());
-            userRepository.save(nuovo);
-        }
+//        var authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (!(authentication instanceof JwtAuthenticationToken)) {
+//            throw new RuntimeException("Autenticazione non valida");
+//        }
+
+      var jwt = (CustomJwt) SecurityContextHolder.getContext().getAuthentication();
+//        var jwt = (JwtAuthenticationToken) authentication;
+        String email = jwt.getToken().getClaimAsString("email");
+
+        //String email = jwt.getName();
+
+      System.out.println(jwt.getToken().getClaims());
+      User loggato = userRepository.findByEmail(jwt.getEmail());
+      if (loggato == null) {
+          User nuovo = new User();
+          nuovo.setEmail(jwt.getEmail());
+          nuovo.setFirstName(jwt.getFirstName());
+          nuovo.setLastName(jwt.getLastName());
+          nuovo.setAddress(jwt.getAddress());
+          nuovo.setTelephoneNumber(jwt.getTelephoneNumber());
+
+          SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+          Date defaultDate;
+            try {
+                defaultDate = dateFormat.parse(jwt.getBirthDate());
+            } catch (ParseException e) {
+                defaultDate = new Date();
+            }
+            nuovo.setBirthDate(defaultDate);
+          System.out.println(" Ricevuto utente: " + nuovo);
+          userRepository.save(nuovo);
+      }
+//        User loggato = userRepository.findByEmail(email);
+//        if (loggato == null) {
+//            User nuovo = new User();
+//            nuovo.setEmail(email);
+//            nuovo.setFirstName(jwt.getToken().getClaimAsString("given_name"));
+//            nuovo.setLastName(jwt.getToken().getClaimAsString("family_name"));
+//            // Imposta i campi obbligatori
+//            nuovo.setAddress("Da aggiornare"); // Poiché address è NOT NULL nel database
+//            userRepository.save(nuovo);
+//
+//            // Imposta la data di nascita con un formato specifico
+//            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+//            Date defaultDate;
+//            try {
+//                defaultDate = dateFormat.parse("01/01/2000");
+//            } catch (ParseException e) {
+//                defaultDate = new Date();
+//            }
+//            nuovo.setBirthDate(defaultDate);
+//
+//            // Il telefono può essere null quindi non lo impostiamo
+//            nuovo.setTelephoneNumber(null);
+//
+//
+//        }
+
 
         Map<String, String> response = new HashMap<>();
         response.put("messaggio", "Utente loggato correttamente e presente nel database");

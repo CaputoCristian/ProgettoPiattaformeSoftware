@@ -7,14 +7,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByFirstName(String firstName);
     List<User> findByLastName(String lastName);
     List<User> findByFirstNameAndLastName(String firstName, String lastName);
-    User findById(Integer id);
     boolean existsById(Integer id);
     boolean existsByEmail(String email);
-    boolean existsByCf(String cf);
+//    boolean existsByCf(String cf);
     User findByEmail(String email);
 
 }

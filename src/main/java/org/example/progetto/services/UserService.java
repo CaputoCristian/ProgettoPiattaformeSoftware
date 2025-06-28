@@ -1,12 +1,11 @@
 package org.example.progetto.services;
 
-import org.apache.logging.log4j.message.Message;
 import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.User;
-import org.example.progetto.exceptions.CfAlreadyExistException;
 import org.example.progetto.exceptions.EmailAlreadyExistException;
 import org.example.progetto.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -25,24 +24,25 @@ public class UserService {
     }
 
     @Transactional(readOnly = false)
-    public User addUser(User user) throws EmailAlreadyExistException, CfAlreadyExistException {
-        if (userRepository.existsByCf(user.getCf())) {
+    @PreAuthorize("isAuthenticated")
+    public User addUser(User user) throws EmailAlreadyExistException {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new EmailAlreadyExistException("Email already exist");
         }
-        if (userRepository.existsByCf(user.getCf())) {
-            throw new CfAlreadyExistException("CF already exist");
-        }
+//        if (userRepository.existsByCf(user.getCf())) {
+//            throw new CfAlreadyExistException("CF already exist");
+//        }
         userRepository.save(user);
         return user;
     }
 
     @Transactional(readOnly = true)     // Non dare accesso all'utente?
-    public User showById(Integer id) {
-        return userRepository.findById(id);
+    public User showByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Transactional(readOnly = false)
-    public User updateUserProfile(Long userId, UserUpdateRequest updateRequest) {
+    public User updateUserProfile(Integer userId, UserUpdateRequest updateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));
 

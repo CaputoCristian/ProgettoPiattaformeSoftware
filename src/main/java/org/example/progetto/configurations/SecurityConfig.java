@@ -25,13 +25,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(customJwtConverter())));
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(CustomjwtConverter())));
         return http.build();
     }
 
-    public Converter<Jwt, CustomJwt> customJwtConverter() {
+    @Bean
+    public Converter<Jwt, CustomJwt> CustomjwtConverter() {
         return new CustomJwtConverter();
     }
+
+//    @Bean
+//    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+//        return new CustomJwtAuthenticationConverter();
+//    }
 
 //    @Bean
 //    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -44,16 +50,16 @@ public class SecurityConfig {
 //        return http.build();
 //    }
 
-    @Bean
-    JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
-        converter.setAuthorityPrefix("ROLE_"); // Importantissimo
-        converter.setAuthoritiesClaimName("realm_access.roles");
-
-        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
-        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
-        return jwtConverter;
-    }
+//    @Bean
+//    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+//        JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
+//        converter.setAuthorityPrefix("ROLE_"); // Importantissimo
+//        converter.setAuthoritiesClaimName("realm_access.roles");
+//
+//        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+//        jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
+//        return jwtConverter;
+//    }
 
 
 

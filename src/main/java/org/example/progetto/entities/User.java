@@ -17,39 +17,39 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "user", schema = "orders")
+@Table(name = "app_user", schema = "orders")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int id;
+    private Integer id;
+
+//    @Basic
+//    @Column(name = "cf", nullable = true, length = 16)
+//    private String cf;
 
     @Basic
-    @Column(name = "cf", nullable = true, length = 16)
-    private String cf;
-
-    @Basic
-    @Column(name = "first_name", nullable = true, length = 50)
+    @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
     @Basic
-    @Column(name = "last_name", nullable = true, length = 50)
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
     @Basic
-    @Column(name = "telephone_number", nullable = true, length = 20)
+    @Column(name = "telephone_number", unique = true, nullable = false, length = 20)
     private String telephoneNumber;
 
     @Basic
-    @Column(name = "email", nullable = true, length = 90)
+    @Column(name = "email", unique = true, nullable = false, length = 90)
     private String email;
 
     @Basic
-    @Column(name = "address", nullable = true, length = 150)
+    @Column(name = "address", nullable = false, length = 150)
     private String address;
 
     @Basic
-    @Column(name = "birth_date", nullable = true, length = 150)
+    @Column(name = "birth_date", nullable = false, length = 150)
     private Date birthDate;
 
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.MERGE)

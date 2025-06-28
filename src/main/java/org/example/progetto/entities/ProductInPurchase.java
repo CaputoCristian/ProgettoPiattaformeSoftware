@@ -29,6 +29,6 @@ public class ProductInPurchase {
     private String quantity;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id")
+    @JoinColumn(name = "related_purchase") //???
     private Purchase relatedPurchase;
 }

@@ -8,6 +8,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class CustomJwtConverter implements Converter<Jwt, CustomJwt> {
@@ -18,15 +19,19 @@ public class CustomJwtConverter implements Converter<Jwt, CustomJwt> {
         Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
 
 
+        System.out.println(jwt.getClaims());
         var customJwt = new CustomJwt(jwt, authorities);
+        customJwt.setEmail(jwt.getClaimAsString("email"));
         customJwt.setFirstName(jwt.getClaimAsString("given_name")); //TODO check
         customJwt.setLastName(jwt.getClaimAsString("family_name"));
+        customJwt.setAddress(jwt.getClaimAsString("address"));
+        customJwt.setTelephoneNumber(jwt.getClaimAsString("telephoneNumber"));
+        customJwt.setBirthDate(jwt.getClaimAsString("birthDate"));
         return customJwt;
     }
 
     private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
         var authorities = new ArrayList<GrantedAuthority>();
-
 
         var realm_access = jwt.getClaimAsMap("realm_access");
         if (realm_access != null && realm_access.get("roles") != null) {

@@ -2,21 +2,21 @@ DROP SCHEMA orders;
 CREATE SCHEMA orders;
 USE orders;
 
-CREATE TABLE user (
-	id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL ,
-	cf VARCHAR(16),
+CREATE TABLE app_user (
+	id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
+/*  cf VARCHAR(16),   */
 	first_name VARCHAR(50),
 	last_name VARCHAR(50),
 	telephone_number VARCHAR(20),
 	email VARCHAR(90),
 	address VARCHAR(150),
-    birth_date DATE
+    birth_date DATE NULL
 );
 
 CREATE TABLE shop (     /*Ogni utente può mettere in vendita i propri prodotti*/
     id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
     seller INTEGER,
-    FOREIGN KEY (seller) REFERENCES user (id)
+    FOREIGN KEY (seller) REFERENCES app_user (id)
 );
 
 CREATE TABLE product (
@@ -35,7 +35,7 @@ CREATE TABLE purchase (
 	id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	buyer INTEGER,
 	time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (buyer) REFERENCES user (id)
+    FOREIGN KEY (buyer) REFERENCES app_user (id)
 );
 
 CREATE TABLE product_in_purchase ( /*Separato da purchase per gestire acquisti con più prodotti*/
@@ -56,7 +56,7 @@ CREATE TABLE review (
     message VARCHAR(500),
     /*#buyer INTEGER,*/
     /*#FOREIGN KEY (buyer) REFERENCES purchase (id),*/
-    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (user_id) REFERENCES app_user (id),
     FOREIGN KEY (purchase_id) REFERENCES purchase (id),
     FOREIGN KEY (product_id) REFERENCES product (id)
 );
@@ -67,7 +67,7 @@ CREATE TABLE cart (
     user_id INTEGER NOT NULL UNIQUE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     total_price DECIMAL(10, 2) DEFAULT 0.00,
-    FOREIGN KEY (user_id) REFERENCES user (id)
+    FOREIGN KEY (user_id) REFERENCES app_user (id)
 );
 
 CREATE TABLE product_in_cart (
