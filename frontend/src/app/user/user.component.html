@@ -1,1 +1,30 @@
-<p>user works!</p>
+<div *ngIf="isLoading">
+  <p>Caricamento profilo...</p>
+</div>
+
+<div *ngIf="errorMessage">
+  <p>{{ errorMessage }}</p>
+</div>
+
+<div *ngIf="!isLoading && !errorMessage">
+  <div class="user-field">
+    <label>Nome</label>
+    <span>{{ userProfile.firstName }} {{ userProfile.lastName }}</span>
+  </div>
+  <div class="user-field">
+    <label>Email</label>
+    <span>{{ userProfile.email }}</span>
+  </div>
+  <div class="user-field">
+    <label>Telefono</label>
+    <span>{{ userProfile.telephoneNumber }}</span>
+  </div>
+  <div class="user-field">
+    <label>Indirizzo</label>
+    <span>{{ userProfile.address }}</span>
+  </div>
+  <div class="user-field">
+    <label>Data di nascita</label>
+    <span>{{ userProfile.birthDate }}</span>
+  </div>
+</div>

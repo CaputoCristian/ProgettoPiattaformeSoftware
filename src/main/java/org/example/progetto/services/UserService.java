@@ -37,7 +37,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)     // Non dare accesso all'utente?
-    public User showByEmail(String email) {
+    public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 

@@ -10,7 +10,7 @@ CREATE TABLE app_user (
 	telephone_number VARCHAR(20),
 	email VARCHAR(90),
 	address VARCHAR(150),
-    birth_date DATE NULL
+    birth_date DATE
 );
 
 CREATE TABLE shop (     /*Ogni utente può mettere in vendita i propri prodotti*/

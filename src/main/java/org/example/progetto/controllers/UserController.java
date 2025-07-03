@@ -8,6 +8,8 @@ import org.example.progetto.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 // import jakarta.validation.Valid; Controllare a cosa serve
@@ -20,7 +22,7 @@ import java.util.List;
         allowedHeaders = "*",
         methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
 )
-@RequestMapping("/users")
+@RequestMapping("")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -40,9 +42,16 @@ public class UserController {
         return userService.showAllUsers();
     }
 
-    @GetMapping("/{id}")
-    public User showUser(@PathVariable String email) {
-        return userService.showByEmail(email);
+    @GetMapping("/profile")
+    public ResponseEntity<User> showUser(Authentication authentication) {
+        JwtAuthenticationToken token = (JwtAuthenticationToken) authentication;
+        String email = token.getToken().getClaimAsString("email");
+
+        User user = userService.findByEmail(email);
+
+        System.out.println("Invio user:" + user);
+
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/{id}/profile")

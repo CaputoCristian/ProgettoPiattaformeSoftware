@@ -1,5 +1,6 @@
 package org.example.progetto.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -50,6 +51,7 @@ public class User {
 
     @Basic
     @Column(name = "birth_date", nullable = false, length = 150)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Rome")
     private Date birthDate;
 
     @OneToMany(mappedBy = "buyer", cascade = CascadeType.MERGE)

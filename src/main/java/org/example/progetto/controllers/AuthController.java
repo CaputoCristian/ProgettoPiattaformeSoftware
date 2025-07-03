@@ -94,6 +94,7 @@ public class AuthController {
             try {
                 defaultDate = dateFormat.parse(jwt.getBirthDate());
             } catch (ParseException e) {
+                System.out.println("errore nel parsing della data di nascita: " + e.getMessage());
                 defaultDate = new Date();
             }
             nuovo.setBirthDate(defaultDate);
