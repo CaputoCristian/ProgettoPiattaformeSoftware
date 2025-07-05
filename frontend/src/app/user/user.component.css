@@ -1,38 +1,57 @@
-:host {
-  display: block;
-  background-color: #ffffff;
-  padding: 2rem;
-  max-width: 600px;
+.profile-card {
+  max-width: 500px;
   margin: 2rem auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #000000;
-}
-
-.user-profile {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.user-field {
-  background-color: #f9f9f9;
-  padding: 1rem;
+  padding: 2rem;
+  background: #fefefe;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: background-color 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
-.user-field:hover {
-  background-color: #f1f1f1;
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.user-field label {
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
   font-weight: bold;
   display: block;
-  margin-bottom: 0.3rem;
-  color: #333;
 }
 
-.user-field span {
-  color: #000;
+input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  background: black;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button.danger {
+  background: #e74c3c;
+}
+

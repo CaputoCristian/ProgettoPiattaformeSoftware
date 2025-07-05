@@ -24,8 +24,11 @@ export class UserComponent implements OnInit {
     telephoneNumber: '',
     birthDate: ''
   };
+  originalProfile!: UserProfileDTO;
   isLoading: boolean = true;
   errorMessage: string = '';
+  isEditing = false;
+  editableProfile: UserProfileDTO = {} as UserProfileDTO;
 
 
   constructor(private UserService: UserService) {}
@@ -38,6 +41,8 @@ export class UserComponent implements OnInit {
     this.UserService.getUser().subscribe(
       user => {
         this.userProfile = user;
+        this.originalProfile = user;
+        this.editableProfile = user;
         this.isLoading = false;
       },
       error => {
@@ -46,6 +51,23 @@ export class UserComponent implements OnInit {
         this.isLoading = false;
       }
     );
+  }
+
+  enableEdit() {
+    this.isEditing = true;
+  }
+
+  cancelEdit() {
+    this.editableProfile = { ...this.userProfile };
+    this.isEditing = false;
+  }
+
+  saveChanges() {
+    this.UserService.updateUser(this.editableProfile).subscribe(updated => {
+      this.userProfile = updated;
+      this.editableProfile = updated
+      this.isEditing = false;
+    });
   }
 
 }

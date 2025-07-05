@@ -7,6 +7,7 @@ import {AuthGuard} from './guards/auth.guard';
 import {AppComponent} from './app.component';
 import {HomepageComponent} from './homepage/homepage.component';
 import {ProductComponent} from './product/product.component';
+import {MarketplaceComponent} from './marketplace/marketplace.component';
 
 export const routes: Routes = [
   { path: 'products', component:HomepageComponent, canActivate: [AuthGuard]},
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'admin', component:AdminComponent},
   { path: 'login', component:LoginComponent },
   { path: 'prodotto', component:ProductComponent },
+  { path: 'shop', component:MarketplaceComponent },
 
 
 ];

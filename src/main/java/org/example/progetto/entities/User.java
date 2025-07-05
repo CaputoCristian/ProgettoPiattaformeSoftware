@@ -58,4 +58,7 @@ public class User {
     @JsonIgnore
     private List<Purchase> purchases;
 
+    @OneToOne(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Shop shop;
+
 }

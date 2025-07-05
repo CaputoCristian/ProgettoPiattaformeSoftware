@@ -22,7 +22,7 @@ import java.util.List;
         allowedHeaders = "*",
         methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE }
 )
-@RequestMapping("")
+@RequestMapping("/user")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -54,10 +54,19 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{id}/profile")
-    public ResponseEntity<User> updateProfile(@PathVariable Integer id,
+    @PutMapping("/update")
+    public ResponseEntity<User> updateProfile(Authentication authentication,
                                               @RequestBody UserUpdateRequest request) {
-        User updatedUser = userService.updateUserProfile(id, request);
+
+        System.out.println("Ricevuta richiesta:" + request);
+        JwtAuthenticationToken token = (JwtAuthenticationToken) authentication;
+        String email = token.getToken().getClaimAsString("email");
+
+        User user = userService.findByEmail(email);
+
+        System.out.println("Update di user:" + user + " con request:" + request);
+
+        User updatedUser = userService.updateUserProfile(user.getId(), request);
         return ResponseEntity.ok(updatedUser);
     }
 }

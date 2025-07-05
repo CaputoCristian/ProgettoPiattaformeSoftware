@@ -1,0 +1,26 @@
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.product-card {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+button {
+  margin-right: 5px;
+}
+
+input {
+  margin-bottom: 10px;
+  display: block;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}

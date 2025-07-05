@@ -23,9 +23,10 @@ public class Shop {
     private Integer id;
 
     @OneToOne
-    @JoinColumn(name = "seller")
+    @JoinColumn(name = "seller_id", unique = true, nullable = false)
     private User seller;
 
-    @OneToMany(mappedBy = "id")
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     private List<Product> products;
+
 }

@@ -1,0 +1,114 @@
+import { Component, OnInit } from '@angular/core';
+import { ProductService } from '../services/product.service';
+import { CartService } from '../services/cart.service';
+import {CommonModule, NgFor, NgIf} from '@angular/common';
+import { OAuthService } from 'angular-oauth2-oidc';
+import {Product} from '../models/product';
+import {provideHttpClient} from '@angular/common/http';
+import {UserService} from '../services/user.service';
+import {MarketplaceService} from '../services/marketplace.service';
+import {FormsModule, NgModel} from '@angular/forms';
+
+
+
+@Component({
+  selector: 'app-marketplace',
+  imports: [CommonModule, NgFor, FormsModule ],
+  templateUrl: './marketplace.component.html',
+  styleUrl: './marketplace.component.css'
+})
+export class MarketplaceComponent implements OnInit{
+
+  prodotti: Product[] = [];
+  quantities: number[] = [];
+  isLoading: boolean = true;
+  errorMessage: string = '';
+  selectedProduct: Product | null = null;
+  isEditMode: boolean = false;
+
+
+  constructor(private ProductService: ProductService, private UserService: UserService, private MarketplaceService: MarketplaceService, private oauthService: OAuthService) { }
+
+  ngOnInit(): void {
+    if (this.oauthService.hasValidAccessToken()) {
+      this.loadProducts();
+    } else {
+
+      this.oauthService.events.subscribe(event => {
+        if (event.type === 'token_received') {
+          this.loadProducts();
+        }
+      });
+    }
+  }
+
+  loadProducts(): void {
+    this.MarketplaceService.getAllProducts().subscribe(
+      prodotti => {
+        this.prodotti = prodotti;
+        this.quantities = this.prodotti.map(() => 1);
+        this.isLoading = false;
+      },
+      error => {
+        console.error('Errore nel caricamento dei prodotti:', error);
+        this.errorMessage = 'Errore nel caricamento dei prodotti.';
+        this.isLoading = false;
+      }
+    );
+  }
+
+
+  addProduct(): void {
+    const newProduct: Product = {
+      id: 0, // o undefined se usi un DB che genera l'ID
+      name: '',
+      description: '',
+      price: 0,
+      brand: '',
+      quantity: 0
+    };
+    this.selectedProduct = newProduct;
+    this.isEditMode = false;
+  }
+
+  editProduct(product: Product): void {
+    this.selectedProduct = { ...product }; // copia per evitare modifiche dirette
+    this.isEditMode = true;
+  }
+
+  saveProduct(): void {
+    if (this.selectedProduct) {
+      if (this.isEditMode) {
+        this.MarketplaceService.editProduct(this.selectedProduct).subscribe({
+          next: () => this.loadProducts(),
+          error: err => console.error('Errore aggiornamento prodotto:', err)
+        });
+      } else {
+        this.MarketplaceService.addProduct(this.selectedProduct).subscribe({
+          next: () => this.loadProducts(),
+          error: err => console.error('Errore aggiunta prodotto:', err)
+        });
+      }
+      this.selectedProduct = null;
+    }
+  }
+
+  deleteProduct(productId: number): void {
+    if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
+      this.MarketplaceService.deleteProduct(productId).subscribe({
+        next: () => this.loadProducts(),
+        error: err => console.error('Errore eliminazione prodotto:', err)
+      });
+    }
+  }
+
+  cancelEdit(): void {
+    this.selectedProduct = null;
+  }
+
+
+}
+
+
+
+

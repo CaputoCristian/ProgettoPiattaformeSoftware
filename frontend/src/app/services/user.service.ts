@@ -29,7 +29,11 @@ export class UserService {
   }
 
   getUser(): Observable<UserProfileDTO> {
-    return this.httpClient.get<UserProfileDTO>(`${this.baseUrl}/profile`, { headers: this.getHeaders() });
+    return this.httpClient.get<UserProfileDTO>(`${this.baseUrl}/user/profile`, { headers: this.getHeaders() });
+  }
+
+  updateUser(user: UserProfileDTO): Observable<UserProfileDTO> {
+    return this.httpClient.put<UserProfileDTO>(`${this.baseUrl}/user/update`, user, { headers: this.getHeaders() });
   }
 
 }

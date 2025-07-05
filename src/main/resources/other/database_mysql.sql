@@ -1,3 +1,4 @@
+DELETE orders;
 DROP SCHEMA orders;
 CREATE SCHEMA orders;
 USE orders;
@@ -15,8 +16,9 @@ CREATE TABLE app_user (
 
 CREATE TABLE shop (     /*Ogni utente può mettere in vendita i propri prodotti*/
     id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    seller INTEGER,
-    FOREIGN KEY (seller) REFERENCES app_user (id)
+    seller_id INTEGER UNIQUE NOT NULL,
+    FOREIGN KEY (seller_id) REFERENCES app_user(id)
+
 );
 
 CREATE TABLE product (
@@ -27,8 +29,8 @@ CREATE TABLE product (
     description VARCHAR(500),
 	price FLOAT, /*Usare DECIMAL? Evita problemi di precisione*/
     quantity INTEGER,
-    sold_by INTEGER,
-    FOREIGN KEY (sold_by) REFERENCES shop (id)
+    shop_id INTEGER,
+    FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
 CREATE TABLE purchase (

@@ -44,6 +44,8 @@ public class Product {
     @Column(name = "quantity", nullable = true)
     private Integer quantity;
 
-    //TODO relazione col venditore.
+    @ManyToOne
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
 
 }

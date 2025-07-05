@@ -1,9 +1,12 @@
 package org.example.progetto.controllers;
 
 
+import org.example.progetto.entities.Product;
+import org.example.progetto.entities.Shop;
 import org.example.progetto.entities.User;
 import org.example.progetto.jwt.CustomJwt;
 import org.example.progetto.repositories.ProductRepository;
+import org.example.progetto.repositories.ShopRepository;
 import org.example.progetto.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 
@@ -37,6 +38,9 @@ public class AuthController {
     private UserRepository userRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ShopRepository shopRepository;
+
 
 
 //    @GetMapping("/home")
@@ -100,6 +104,12 @@ public class AuthController {
             nuovo.setBirthDate(defaultDate);
           System.out.println(" Ricevuto utente: " + nuovo);
           userRepository.save(nuovo);
+
+          Shop shop = new Shop(); //Si inizializza il marketplace dell'utente
+          shop.setSeller(nuovo);
+          shop.setProducts(new ArrayList<Product>());
+
+          shopRepository.save(shop);
       }
 //        User loggato = userRepository.findByEmail(email);
 //        if (loggato == null) {
