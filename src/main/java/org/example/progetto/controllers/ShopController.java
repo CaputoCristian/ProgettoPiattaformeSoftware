@@ -7,8 +7,10 @@ import org.example.progetto.entities.Shop;
 import org.example.progetto.entities.User;
 import org.example.progetto.exceptions.BarcodeAlreadyExistException;
 //import org.example.progetto.exceptions.UserAlreadyHasShopException;
+import org.example.progetto.exceptions.ShopNotFoundException;
 import org.example.progetto.services.ShopService;
 import org.example.progetto.services.UserNotFoundException;
+import org.example.progetto.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,8 @@ public class ShopController {
 
     @Autowired
     private ShopService shopService;
+    @Autowired
+    private UserService userService;
 
 //    @PostMapping
 //    public ResponseEntity Create(@RequestBody Shop shop) {
@@ -53,19 +57,32 @@ public class ShopController {
         JwtAuthenticationToken token = (JwtAuthenticationToken) authentication;
         String email = token.getToken().getClaimAsString("email");
 
+        Shop shop = new Shop();
 
+        try{
+            shop = shopService.getShopByUserEmail(email);
 
-        Shop shop = shopService.getShopByUserEmail(email);
+        } catch (ShopNotFoundException e) {
 
-
-        if (shop == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shop not found for this user.");
+            shop.setSeller(userService.findByEmail(email));
+            shop.setProducts(new ArrayList<Product>());
+            shopService.addShop(shop);
         }
+
+
+//        if (shop == null) {
+//            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shop not found for this user.");
+//          shop.setSeller(userService.findByEmail(email));
+//          shop.setProducts(new ArrayList<Product>());
+//
+//          shopService.addShop(shop);
+//        }
 
         List<Product> products = shopService.getProductFromShop(shop.getId());
-        if (products.isEmpty()) {
-            return ResponseEntity.ok("No products available in this shop.");
-        }
+//
+//        if (products.isEmpty()) {
+//            return ResponseEntity.ok("No products available in this shop.");
+//        }
 
         return ResponseEntity.ok(products);
 

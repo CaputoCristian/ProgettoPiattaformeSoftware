@@ -43,19 +43,37 @@ export class MarketplaceComponent implements OnInit{
   }
 
   loadProducts(): void {
-    this.MarketplaceService.getAllProducts().subscribe(
-      prodotti => {
-        this.prodotti = prodotti;
-        this.quantities = this.prodotti.map(() => 1);
+    this.MarketplaceService.getAllProducts().subscribe({
+      next: (response: any) => {
         this.isLoading = false;
+
+        if (Array.isArray(response)) {
+          this.prodotti = response;
+          this.quantities = this.prodotti.map(() => 1);
+
+          if (this.prodotti.length === 0) {
+            this.errorMessage = 'Non ci sono prodotti disponibili in questo shop.';
+          } else {
+            this.errorMessage = '';
+          }
+
+        } else if (response?.message) {
+          this.prodotti = [];
+          this.errorMessage = response.message;
+        } else {
+          this.prodotti = [];
+          this.errorMessage = 'Formato di risposta non riconosciuto.';
+        }
       },
-      error => {
-        console.error('Errore nel caricamento dei prodotti:', error);
-        this.errorMessage = 'Errore nel caricamento dei prodotti.';
+      error: error => {
         this.isLoading = false;
+        console.error('Errore nel caricamento dei prodotti:', error);
+        this.prodotti = [];
+        this.errorMessage = 'Errore nel caricamento dei prodotti.';
       }
-    );
+    });
   }
+
 
 
   addProduct(): void {

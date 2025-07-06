@@ -105,12 +105,15 @@ public class AuthController {
           System.out.println(" Ricevuto utente: " + nuovo);
           userRepository.save(nuovo);
 
-          Shop shop = new Shop(); //Si inizializza il marketplace dell'utente
-          shop.setSeller(nuovo);
-          shop.setProducts(new ArrayList<Product>());
-
-          shopRepository.save(shop);
+//          Shop shop = new Shop(); //Si inizializza il marketplace dell'utente
+//          shop.setSeller(nuovo);
+//          shop.setProducts(new ArrayList<Product>());
+//
+//          shopRepository.save(shop);
       }
+
+
+
 //        User loggato = userRepository.findByEmail(email);
 //        if (loggato == null) {
 //            User nuovo = new User();

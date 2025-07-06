@@ -1,4 +1,3 @@
-DELETE orders;
 DROP SCHEMA orders;
 CREATE SCHEMA orders;
 USE orders;
