@@ -60,7 +60,7 @@ public class CartService {
     private static final Random RANDOM = new Random();
 
     @Transactional
-    public void addToCart(String idUtente, int idProdotto, int quantita)
+    public void addToCart(String idUtente, int idProdotto )
             throws UserNotFoundException, ProductNotFoundException, InvalidQuantityException {
 
         // Recupero l'utente dal database.
@@ -89,7 +89,7 @@ public class CartService {
         // Verifico la disponibilità del prodotto
         int disponibilitaProd = prod.getQuantity();
 
-        if (quantita > disponibilitaProd) {
+        if (disponibilitaProd <= 0) {
             throw new InvalidQuantityException("Impossibile aggiungere al carrello: " +
                     "il prodotto non è disponibile per la quantità desiderata");
         }
@@ -102,7 +102,7 @@ public class CartService {
             entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
 
             // Aggiorno la quantità
-            int nuovaQuantita = cp.getQuantity() + quantita;
+            int nuovaQuantita = cp.getQuantity() + 1;
             if (nuovaQuantita <= prod.getQuantity()) {
                 cp.setQuantity(nuovaQuantita);
                 productInCartRepository.save(cp);
@@ -115,7 +115,7 @@ public class CartService {
             aggiunta.setCart(cart);
             aggiunta.setProduct(prod);
             aggiunta.setProductId(prod.getId());
-            aggiunta.setQuantity(quantita);
+            aggiunta.setQuantity(1); //Prima aggiunta
             aggiunta.setCartId(cart.getCartId());
 
             productInCartRepository.save(aggiunta);

@@ -4,10 +4,10 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Observable } from 'rxjs';
 
 export interface CarrelloProdottoDTO {
-  idProdotto: number;
-  nomeProdotto: string;
-  prezzoProdotto: number;
-  quantita: number;
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
 }
 
 @Injectable({
@@ -30,8 +30,8 @@ export class CartService {
     return this.httpClient.get<CarrelloProdottoDTO[]>(`${this.baseUrl}/items`, { headers: this.getHeaders() });
   }
 
-  aggiungiAlCarrello(idProdotto: number, quantita: number): Observable<any> {
-    const params = { idProdotto: idProdotto.toString(), quantita: quantita.toString() };
+  aggiungiAlCarrello(idProdotto: number): Observable<any> {
+    const params = { idProdotto: idProdotto.toString()};
     return this.httpClient.post(`${this.baseUrl}/add`, null, { headers: this.getHeaders(), params });
   }
 

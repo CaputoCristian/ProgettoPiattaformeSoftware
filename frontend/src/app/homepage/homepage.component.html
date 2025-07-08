@@ -7,29 +7,58 @@
 </div>
 
 <div *ngIf="!isLoading && !errorMessage">
-  <div class="product-container">
-    <div class="product-card" *ngFor="let product of prodotti; let i = index">
-      <div class="product-details">
-        <h3 class="product-name">{{ product.name }}</h3>
-        <p>Prezzo: €{{ product.price}}</p>
-        <p>Quantità Disponibile: {{ product.quantity }}</p>
+  <div class="container py-4">
+    <div class="row g-3">
+      <div class="col-md-3 mb-4" *ngFor="let product of paginatedProducts; let i = index">
+        <div class="card shadow-sm h-100 border-0" style="background-color: #f2f2f2">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <div>
+              <h5 class="card-title mb-0 fw-bold text-dark">
+                {{ product.name }}
+              </h5>
+              <small class="text-muted">{{ product.brand }}</small>
+            </div>
 
-        <div class="quantity-selector">
-          <label for="quantity-{{i}}">Quantità:</label>
-          <input
-            id="quantity-{{i}}"
-            type="number"
-            [value]="quantities[i]"
-            min="1"
-            [max]="product.quantity"
-            (change)="onQuantityChange($event, i)"
-          >
+            <div class="mt-3">
+              <div class="d-flex justify-content-between">
+                <span class="fw-semibold">Disponibilità:</span>
+                <span>{{ product.quantity }}</span>
+              </div>
+              <div class="d-flex justify-content-between">
+                <span class="fw-semibold">Prezzo:</span>
+                <span>€ {{ product.price | number: '1.2-2' }}</span>
+              </div>
+            </div>
+
+            <button
+              class="btn btn-primary mt-3 w-100"
+              (click)="addToCart(product.id)"
+            >
+              Aggiungi al carrello
+            </button>
+          </div>
         </div>
-
-        <button class="add-to-cart" (click)="addToCart(product.id, quantities[i])">
-          Aggiungi al Carrello
-        </button>
       </div>
+    </div>
+
+    <div class="d-flex justify-content-center mt-4">
+      <nav aria-label="Paginazione prodotti" *ngIf="totalPages > 1">
+        <ul class="pagination justify-content-center mt-4">
+          <li class="page-item" [class.disabled]="currentPage === 1">
+            <a class="page-link" (click)="goToPage(currentPage - 1)">&laquo;</a>
+          </li>
+
+          <li class="page-item"
+              *ngFor="let page of [].constructor(totalPages); let i = index"
+              [class.active]="currentPage === i + 1">
+            <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
+          </li>
+
+          <li class="page-item" [class.disabled]="currentPage === totalPages">
+            <a class="page-link" (click)="goToPage(currentPage + 1)">&raquo;</a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </div>

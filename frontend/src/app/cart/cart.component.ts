@@ -53,15 +53,15 @@ export class CartComponent implements OnInit {
   }
 
   calculateTotal(): void {
-    this.totalAmount = this.cartItems.reduce((acc, item) => acc + (item.prezzoProdotto * item.quantita), 0);
+    this.totalAmount = this.cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
   }
 
   increaseQuantity(idProdotto: number): void {
     this.CartService.plusAdding(idProdotto).subscribe(
       () => {
-        const item = this.cartItems.find(item => item.idProdotto === idProdotto);
+        const item = this.cartItems.find(item => item.id === idProdotto);
         if (item) {
-          item.quantita += 1;
+          item.quantity += 1;
           this.calculateTotal();
         }
       },
@@ -75,11 +75,11 @@ export class CartComponent implements OnInit {
   decreaseQuantity(idProdotto: number): void {
     this.CartService.minusRemoving(idProdotto).subscribe(
       () => {
-        const item = this.cartItems.find(item => item.idProdotto === idProdotto);
+        const item = this.cartItems.find(item => item.id === idProdotto);
         if (item) {
-          item.quantita -= 1;
-          if (item.quantita <= 0) {
-            this.cartItems = this.cartItems.filter(item => item.idProdotto !== idProdotto);
+          item.quantity -= 1;
+          if (item.quantity <= 0) {
+            this.cartItems = this.cartItems.filter(item => item.id !== idProdotto);
           }
           this.calculateTotal();
         }
@@ -96,7 +96,7 @@ export class CartComponent implements OnInit {
     this.CartService.rimuoviDalCarrello(idProdotto).subscribe(
       () => {
         // Successo, rimuovo il prodotto dal carrello
-        this.cartItems = this.cartItems.filter(item => item.idProdotto !== idProdotto);
+        this.cartItems = this.cartItems.filter(item => item.id !== idProdotto);
         this.calculateTotal();
         this.isLoading = false;
       },

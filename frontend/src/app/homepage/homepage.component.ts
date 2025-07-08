@@ -19,6 +19,9 @@ export class HomepageComponent implements OnInit {
   quantities: number[] = [];
   isLoading: boolean = true;
   errorMessage: string = '';
+  currentPage: number = 1;
+  itemsPerPage: number = 12;
+  totalPages: number = 1;
 
   constructor(private ProductService: ProductService, private CartService: CartService, private oauthService: OAuthService) { }
 
@@ -40,6 +43,8 @@ export class HomepageComponent implements OnInit {
       prodotti => {
         this.prodotti = prodotti;
         this.quantities = this.prodotti.map(() => 1);
+        this.totalPages = Math.ceil(this.prodotti.length / this.itemsPerPage);
+        this.currentPage = 1;
         this.isLoading = false;
       },
       error => {
@@ -50,7 +55,16 @@ export class HomepageComponent implements OnInit {
     );
   }
 
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
+  }
 
+  get paginatedProducts(): Product[] {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    return this.prodotti.slice(start, start + this.itemsPerPage);
+  }
 
   onQuantityChange(event: any, index: number): void {
     const quantity = event.target.value;
@@ -59,8 +73,8 @@ export class HomepageComponent implements OnInit {
     }
   }
 
-  addToCart(productId: number, quantity: number): void {
-    this.CartService.aggiungiAlCarrello(productId, quantity).subscribe(
+  addToCart(productId: number): void {
+    this.CartService.aggiungiAlCarrello(productId).subscribe(
       response => {
         console.log('Successo:', response);
         alert('Prodotto aggiunto al carrello con successo.');

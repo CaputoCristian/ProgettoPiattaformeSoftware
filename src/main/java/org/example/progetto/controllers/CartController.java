@@ -40,14 +40,13 @@ public class CartController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/add")
     public ResponseEntity<Map<String, String>> addToCart(
-            @RequestParam @NotNull @Positive int idProdotto,
-            @RequestParam @NotNull @Positive int quantita, Authentication authentication) {
+            @RequestParam @NotNull @Positive int idProdotto, Authentication authentication) {
 
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
 
 
         try {
-            cartService.addToCart(email, idProdotto, quantita);
+            cartService.addToCart(email, idProdotto);
 
             return creaRisposta("Prodotto aggiunto al carrello con successo.", HttpStatus.OK);
         } catch (UserNotFoundException e) {
@@ -182,11 +181,12 @@ public class CartController {
 
     // Aumento la quantità di un prodotto nel carrello (plus adding)
     @PutMapping("/plus")
-    public ResponseEntity<Map<String, String>> IncrementProductQuantity(
-            @RequestParam @NotNull @Positive int idProdotto) {
-        var jwt = (CustomJwt) SecurityContextHolder.getContext().getAuthentication();
-        String email = jwt.getName();
+    public ResponseEntity<Map<String, String>> incrementProductQuantity(
+            @RequestParam @NotNull @Positive int idProdotto, Authentication authentication) {
+        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+
         try {
+            System.out.println("Richiesta di plus ricevuta:" + email + ";"+ idProdotto);
             cartService.IncrementProductQuantity(email, idProdotto);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Quantità aumentata con successo.");

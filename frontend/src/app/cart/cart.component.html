@@ -1,44 +1,55 @@
-<div class="cart-container" *ngIf="!isLoading && cartItems.length > 0">
+<div *ngIf="!isLoading && cartItems.length > 0">
   <h2>Il tuo carrello</h2>
-  <div class="cart-items">
-    <div class="cart-item" *ngFor="let item of cartItems">
-      <div class="item-details">
-        <h3>{{ item.nomeProdotto }}</h3>
-        <p>Prezzo unitario: €{{ item.prezzoProdotto }}</p>
-        <div class="quantity-controls">
-          <button (click)="decreaseQuantity(item.idProdotto)">-</button>
-          <span>{{ item.quantita }}</span>
-          <button (click)="increaseQuantity(item.idProdotto)">+</button>
-        </div>
-        <p>Totale: €{{ item.prezzoProdotto * item.quantita | number:'1.2-2' }}</p>
-        <button class="remove-button" (click)="removeItem(item.idProdotto)">Rimuovi</button>
-      </div>
+
+  <div *ngFor="let item of cartItems" style="
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;">
+
+    <div>
+      <strong style="font-size: 1.2em">{{ item.name }}</strong><br>
+      <small>Prezzo unitario: €{{ item.price }}</small><br>
+      <small>Totale: €{{ item.price * item.quantity | number:'1.2-2' }}</small>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 10px">
+      <button class="btn btn-primary btn-sm" (click)="decreaseQuantity(item.id)">-</button>
+      <span>{{ item.quantity }}</span>
+      <button class="btn btn-primary btn-sm" (click)="increaseQuantity(item.id)">+</button>
+      <button class="btn btn-outline-danger btn-sm" (click)="removeItem(item.id)">Rimuovi</button>
     </div>
   </div>
 
-  <div class="cart-summary">
-    <p>Importo totale: €{{ totalAmount | number:'1.2-2' }}</p>
-    <button class="empty-cart-button" (click)="emptyCart()">Svuota Carrello</button>
+  <div style="margin-top: 20px">
+    <strong>Totale: €{{ totalAmount | number:'1.2-2' }}</strong>
+    <button class="btn btn-outline-danger btn-sm" (click)="emptyCart()">Svuota carrello</button>
   </div>
 
-  <div class="order-form">
+  <div style="margin-top: 20px">
     <h3>Effettua l'ordine</h3>
-    <label for="indirizzo">Indirizzo di Spedizione:</label>
-    <input type="text" id="indirizzo" [(ngModel)]="indirizzoSpedizione" placeholder="Inserisci indirizzo">
+    <label>
+      Indirizzo Spedizione:<br>
+      <input class="form-control" [(ngModel)]="indirizzoSpedizione" placeholder="Via/Piazza...">
+    </label><br><br>
 
-    <label for="metodoPagamento">Metodo di Pagamento:</label>
-    <select id="metodoPagamento" [(ngModel)]="metodoPagamento">
-      <option value="1">Carta di Credito</option>
-      <option value="2">PayPal</option>
-    </select>
+    <label>
+      Metodo di pagamento:
+      <select class="form-select" [(ngModel)]="metodoPagamento">
+        <option value="1">Carta di Credito</option>
+        <option value="2">PayPal</option>
+      </select>
+    </label><br><br>
 
-    <button class="order-button" (click)="placeOrder()">Effettua Ordine</button>
+    <button class="btn btn-success w-100" (click)="placeOrder()">Ordina</button>
   </div>
 </div>
 
-<div class="empty-cart-container" *ngIf="!isLoading && cartItems.length === 0">
-  <div class="empty-cart-message">
-    <h2>Il tuo carrello è vuoto</h2>
-    <p>Aggiungi dei prodotti al tuo carrello per iniziare.</p>
-  </div>
+<div *ngIf="!isLoading && cartItems.length === 0">
+  <h3>Il tuo carrello è vuoto</h3>
+  <p>Aggiungi prodotti per iniziare.</p>
 </div>
