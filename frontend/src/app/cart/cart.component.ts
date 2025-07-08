@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {CartService, CarrelloProdottoDTO} from '../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {OAuthEvent, OAuthService} from 'angular-oauth2-oidc';
+import {filter} from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -21,11 +23,19 @@ export class CartComponent implements OnInit {
   metodoPagamento: number = 1; // Ho messo giusto un valore di default cosi
   indirizzoSpedizione: string = '';
 
-  constructor(private CartService: CartService) { }
+  constructor(
+    private CartService: CartService,
+    private oauthService: OAuthService,
+  ) { }
 
-  ngOnInit(): void {
-    this.loadCartItems();
-  }
+  ngOnInit(): void { //evita di fare la richiesta prima dell'autenticazione, evita error 401
+    if (this.oauthService.hasValidAccessToken()) {
+      this.loadCartItems();
+    } else {
+      this.oauthService.events
+        .pipe(filter((e: OAuthEvent) => e.type === 'token_received'))
+        .subscribe(() => this.loadCartItems());
+    }  }
 
   loadCartItems(): void {
     this.CartService.getCartItems().subscribe(

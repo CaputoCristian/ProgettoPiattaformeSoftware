@@ -26,16 +26,16 @@ public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private int idCarrello;
+    private int cartId;
 
     @JoinColumn(name = "user_id", nullable = false)
-    private int idCliente;
+    private int userId;
 
     @Column(name ="total_price", precision = 10, scale = 2)
-    private BigDecimal prezzoTotale = BigDecimal.ZERO;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<ProductInCart> carrelloProdottos = new LinkedHashSet<>();
+    private List<ProductInCart> cartProducts = new ArrayList<>();
 
 
 

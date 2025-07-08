@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Integer> {
-    Cart findByIdCliente(int idCliente);
-    @Query("SELECT c FROM Cart c LEFT JOIN FETCH c.carrelloProdottos WHERE c.idCliente = :idCliente")
-    Cart findByIdUtenteWithProducts(@Param("idCliente") int idCliente);
+    Cart findByUserId(int userId);
+    @Query("SELECT c FROM Cart c LEFT JOIN FETCH c.cartProducts WHERE c.userId = :userId")
+    Cart findByUserIdWithProducts(@Param("userId") int userId);
 
 
 }

@@ -2,6 +2,7 @@ package org.example.progetto.services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
+import org.example.progetto.DTO.ProductInCartDTO;
 import org.example.progetto.entities.Cart;
 import org.example.progetto.entities.Product;
 import org.example.progetto.entities.ProductInCart;
@@ -21,17 +22,16 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
+@Transactional
 public class CartService {
     @Autowired
     private CartRepository cartRepository;
-
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private ProductRepository productRepository;
 
@@ -70,10 +70,10 @@ public class CartService {
         }
 
         // Recupero o creo il carrello dell'utente
-        Cart cart = cartRepository.findByIdCliente(user.getId());
+        Cart cart = cartRepository.findByUserId(user.getId());
         if (cart == null) {
             cart = new Cart();
-            cart.setIdCliente(user.getId());
+            cart.setUserId(user.getId());
             cart = cartRepository.save(cart);
         } else {
             // Lock del carrello per evitare accessi concorrenti
@@ -116,14 +116,14 @@ public class CartService {
             aggiunta.setProduct(prod);
             aggiunta.setProductId(prod.getId());
             aggiunta.setQuantity(quantita);
-            aggiunta.setCartId(cart.getIdCarrello());
+            aggiunta.setCartId(cart.getCartId());
 
             productInCartRepository.save(aggiunta);
         }
     }
 
     @Transactional
-    public void incrementaquantitaprodottocarrello(String email, int idProdotto)
+    public void IncrementProductQuantity(String email, int idProdotto)
             throws UserNotFoundException, ProductNotFoundException, InvalidQuantityException, InvalidOperationException {
 
         User cliente = userRepository.findByEmail(email);
@@ -134,7 +134,7 @@ public class CartService {
         int idUtente = cliente.getId();
 
         // Recupero e locko il carrello
-        Cart carrello = cartRepository.findByIdCliente(idUtente);
+        Cart carrello = cartRepository.findByUserId(idUtente);
         if (carrello == null) {
             throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
         }
@@ -174,7 +174,7 @@ public class CartService {
         }
 
         // Recupero e locko il carrello
-        Cart carrello = cartRepository.findByIdCliente(cliente.getId());
+        Cart carrello = cartRepository.findByUserId(cliente.getId());
         if (carrello == null) {
             throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
         }
@@ -192,7 +192,7 @@ public class CartService {
     }
 
     @Transactional
-    public void decrementaquantitaprodottocarrello(String email, int idProdotto)
+    public void decreaseProductQuantity(String email, int idProdotto)
             throws UserNotFoundException, InvalidOperationException {
 
         User cliente = userRepository.findByEmail(email);
@@ -203,7 +203,7 @@ public class CartService {
         int idUtente = cliente.getId();
 
         // Recupero e locko il carrello
-        Cart carrello = cartRepository.findByIdCliente(idUtente);
+        Cart carrello = cartRepository.findByUserId(idUtente);
         if (carrello == null) {
             throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
         }
@@ -230,21 +230,21 @@ public class CartService {
     }
 
     @Transactional
-    public void svuotaCarrello(String email) throws UserNotFoundException, InvalidOperationException {
+    public void emptyCart(String email) throws UserNotFoundException, InvalidOperationException {
         User cliente = userRepository.findByEmail(email);
         if (cliente == null) {
             throw new UserNotFoundException("Cliente non trovato!");
         }
 
         // Recupero e locko il carrello
-        Cart carrello = cartRepository.findByIdCliente(cliente.getId());
+        Cart carrello = cartRepository.findByUserId(cliente.getId());
         if (carrello == null) {
             throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
         }
         entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
 
         // Recupero e locko tutti gli elementi del carrello
-        Set<ProductInCart> cartProducts = productInCartRepository.findByCartId(carrello.getIdCarrello());
+        List<ProductInCart> cartProducts = productInCartRepository.findByCartId(carrello.getCartId());
         for (ProductInCart cp : cartProducts) {
             entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
         }
@@ -254,7 +254,7 @@ public class CartService {
     }
 
 //    @Transactional
-//    public void ordina(String email, int metodoDiPagamento, String indirizzoSpedizione)
+//    public void buyCart(String email, int metodoDiPagamento, String indirizzoSpedizione)
 //            throws UserNotFoundException, InvalidOperationException {
 //
 //        User cliente = userRepository.findByEmail(email);
@@ -420,36 +420,88 @@ public class CartService {
 //        }
 //    }
 
+
+    @Transactional
+    public List<ProductInCartDTO> getCartItemsByEmail(String email) throws UserNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new UserNotFoundException("Cliente non trovato!");
+        }
+
+        Cart cart = cartRepository.findByUserId(user.getId());
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUserId(user.getId());
+            cart = cartRepository.save(cart);
+        }
+
+        List<ProductInCart> prodottiUser = new ArrayList<>(productInCartRepository.findByCartId(cart.getCartId()));
+
+        return prodottiUser.stream()
+                .map(cp -> {
+                    ProductInCartDTO dto = new ProductInCartDTO();
+                    dto.setId(cp.getProduct().getId());
+                    dto.setName(cp.getProduct().getName());
+                    dto.setPrice(cp.getProduct().getPrice());
+                    dto.setQuantity(cp.getQuantity());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+
+
+
+
+
+
+    // --------------
+
 //    @Transactional(readOnly = true)
-//    public List<carrelloprodottoDTO> getCartItemsByEmail(String email) throws UserNotFoundException {
+//    public List<ProductInCartDTO> getCartItemsByEmail(String email) throws UserNotFoundException, InvalidOperationException {
 //
-//        cliente cliente = userRepository.findByEmail(email);
-//        if (cliente == null) {
+//        User user = userRepository.findByEmail(email);
+//        if (user == null) {
 //            throw new UserNotFoundException("Cliente non trovato!");
 //        }
 //
-//        carrello carrello = cartRepository.findByIdCliente(cliente.getIdCliente());
-//        if (carrello == null) {
+//        Cart cart = cartRepository.findByUserId(user.getId());
+//        if (cart == null) {
 //            throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
 //        }
 //
-//        Set<carrelloprodotto> prodottiUser = productInCartRepository.findByCarrelloId(carrello.getIdCarrello());
+////        Set<ProductInCart> prodottiUser = productInCartRepository.findByCartId(cart.getCartId());
+////        List<ProductInCartDTO> cartItems = new ArrayList<>();
+////
+////        for (ProductInCart cp : prodottiUser) {
+////            Product prodotto = cp.getProduct();
+////
+////            ProductInCartDTO dto = new ProductInCartDTO();
+////            dto.setId(prodotto.getId());
+////            dto.setName(prodotto.getName());
+////            dto.setPrice(prodotto.getPrice());
+////            dto.setQuantity(cp.getQuantity());
+////
+////            cartItems.add(dto);
+////        }
+//        //return cartItems;
 //
-//        List<carrelloprodottoDTO> cartItems = new ArrayList<>();
+//        //Metodo alternativo per risolvere problema di concorrenza
+//        List<ProductInCart> prodottiUser = new ArrayList<>(productInCartRepository.findByCartId(cart.getCartId()));
+//        return prodottiUser.stream()
+//                .map(cp -> {
+//                    ProductInCartDTO dto = new ProductInCartDTO();
+//                    dto.setId(cp.getProduct().getId());
+//                    dto.setName(cp.getProduct().getName());
+//                    dto.setPrice(cp.getProduct().getPrice());
+//                    dto.setQuantity(cp.getQuantity());
+//                    return dto;
+//                })
+//                .collect(Collectors.toList());
 //
-//        for (carrelloprodotto cp : prodottiUser) {
-//            prodotto prodotto = cp.getProdotto();
 //
-//            carrelloprodottoDTO dto = new carrelloprodottoDTO();
-//            dto.setIdProdotto(prodotto.getId());
-//            dto.setNomeProdotto(prodotto.getNome());
-//            dto.setPrezzoProdotto(prodotto.getPrezzo());
-//            dto.setQuantita(cp.getQuantita());
 //
-//            cartItems.add(dto);
-//        }
-//
-//        return cartItems;
 //    }
 
 

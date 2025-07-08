@@ -10,7 +10,7 @@ import {HomepageComponent} from './homepage/homepage.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CartComponent, HomepageComponent, HttpClientModule],
+  imports: [RouterOutlet, RouterLink, CartComponent, HomepageComponent, HttpClientModule, NgIf],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

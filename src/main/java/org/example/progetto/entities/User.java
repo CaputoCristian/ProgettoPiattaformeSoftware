@@ -15,8 +15,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(exclude = "shop") // evita loop con shop.seller
 @Entity
 @Table(name = "app_user", schema = "orders")
 public class User {

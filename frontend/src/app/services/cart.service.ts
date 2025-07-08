@@ -15,7 +15,7 @@ export interface CarrelloProdottoDTO {
 })
 export class CartService {
 
-  private baseUrl = 'http://localhost:8081/cart'; //TODO controlla backend
+  private baseUrl = 'http://localhost:8081/cart';
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 
@@ -32,7 +32,7 @@ export class CartService {
 
   aggiungiAlCarrello(idProdotto: number, quantita: number): Observable<any> {
     const params = { idProdotto: idProdotto.toString(), quantita: quantita.toString() };
-    return this.httpClient.post(`${this.baseUrl}/aggiungi`, null, { headers: this.getHeaders(), params });
+    return this.httpClient.post(`${this.baseUrl}/add`, null, { headers: this.getHeaders(), params });
   }
 
   plusAdding(idProdotto: number): Observable<any> {
@@ -46,16 +46,16 @@ export class CartService {
   }
 
   rimuoviDalCarrello(idProdotto: number): Observable<any> {
-    const url = `${this.baseUrl}/rimuovi?idProdotto=${idProdotto}`;  // Includi l'idProdotto come parametro nella URL
+    const url = `${this.baseUrl}/removeItem?idProdotto=${idProdotto}`;  // Includi l'idProdotto come parametro nella URL
     return this.httpClient.delete(url, { headers: this.getHeaders() });
   }
 
   svuotaCarrello(): Observable<any> {
-    return this.httpClient.delete(`${this.baseUrl}/svuota`, { headers: this.getHeaders() });
+    return this.httpClient.delete(`${this.baseUrl}/removeAll`, { headers: this.getHeaders() });
   }
 
   ordina(metodoPagamento: number, indirizzoSpedizione: string): Observable<any> {
     const params = { metodoPagamento: metodoPagamento.toString(), indirizzoSpedizione };
-    return this.httpClient.post(`${this.baseUrl}/ordina`, null, { headers: this.getHeaders(), params });
+    return this.httpClient.post(`${this.baseUrl}/buy`, null, { headers: this.getHeaders(), params });
   }
 }

@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -15,8 +17,8 @@ public interface ProductInCartRepository extends JpaRepository<ProductInCart, In
     ProductInCart findByCartAndProduct(Cart cart, Product prod);
     ProductInCart findByCartAndProductId(Cart cart, int prod);
 
-    @Query("SELECT cp FROM ProductInCart cp WHERE cp.cart.idCarrello = :idCarrello")
-    Set<ProductInCart> findByCartId(@Param("idCart") int idCart);
+    @Query("SELECT cp FROM ProductInCart cp JOIN FETCH cp.product WHERE cp.cart.cartId = :cartId")
+    List<ProductInCart> findByCartId(@Param("cartId") int cartId);
 
     void deleteAllByCart(Cart cart);
 }

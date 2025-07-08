@@ -39,7 +39,7 @@
     <router-outlet></router-outlet>
   </div>
 
-  <div class="cart">
+  <div class="cart" *ngIf="isLoggedIn">
     <app-cart></app-cart>
   </div>
 </div>

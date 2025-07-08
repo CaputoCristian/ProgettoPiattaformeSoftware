@@ -1,5 +1,6 @@
 package org.example.progetto.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "seller") // evita loop con user.shop
 @ToString
 @Entity
 @Table(name = "shop", schema = "orders")
@@ -27,6 +28,7 @@ public class Shop {
     private User seller;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    @JsonManagedReference //evitare errori nell'aggiunta di un prodotto - loop infinito
     private List<Product> products;
 
 }

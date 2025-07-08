@@ -78,7 +78,7 @@ export class MarketplaceComponent implements OnInit{
 
   addProduct(): void {
     const newProduct: Product = {
-      id: 0, // o undefined se usi un DB che genera l'ID
+      id: 0,
       name: '',
       description: '',
       price: 0,

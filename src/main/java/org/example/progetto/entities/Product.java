@@ -1,5 +1,6 @@
 package org.example.progetto.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -46,6 +47,7 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "shop_id")
+    @JsonBackReference //evitare errori nell'aggiunta di un prodotto - loop infinito
     private Shop shop;
 
 }

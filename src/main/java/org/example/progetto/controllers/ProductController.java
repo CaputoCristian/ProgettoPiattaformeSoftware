@@ -3,13 +3,18 @@ package org.example.progetto.controllers;
 import org.example.progetto.DTO.ProductUpdateRequest;
 import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.Product;
+import org.example.progetto.entities.Shop;
 import org.example.progetto.entities.User;
 import org.example.progetto.exceptions.BarcodeAlreadyExistException;
+import org.example.progetto.exceptions.ShopNotFoundException;
 import org.example.progetto.services.ProductService;
+import org.example.progetto.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,16 +30,37 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ShopService shopService;
 
+//    @PostMapping("/addProduct")
+//    public ResponseEntity addProduct(@RequestBody Product product) {
+//        try {
+//            Product addedProduct = productService.addProduct(product); //Non serve tornare l'utente se si ha il .ok (lazy method)
+//            return ResponseEntity.ok(addedProduct);
+//        } catch (BarcodeAlreadyExistException e) {
+//            return new ResponseEntity<>("Barcode already exist", HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/addProduct")
-    public ResponseEntity addProduct(@RequestBody Product product) {
+    public ResponseEntity<?> addProduct(@RequestBody Product product, Authentication authentication) {
+        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+
         try {
-            Product addedProduct = productService.addProduct(product); //Non serve tornare l'utente se si ha il .ok (lazy method)
+            Shop shop = shopService.getShopByUserEmail(email);
+
+            product.setShop(shop);
+
+            Product addedProduct = productService.addProduct(product);
+
             return ResponseEntity.ok(addedProduct);
-        } catch (BarcodeAlreadyExistException e) {
-            return new ResponseEntity<>("Barcode already exist", HttpStatus.BAD_REQUEST);
+        } catch (ShopNotFoundException e) {
+            return new ResponseEntity<>("Shop non trovato per l'utente", HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("")
