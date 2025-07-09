@@ -7,10 +7,12 @@ import {NgIf} from '@angular/common';
 import {CartComponent} from './cart/cart.component';
 import {CartService} from './services/cart.service';
 import {HomepageComponent} from './homepage/homepage.component';
+import {SearchService} from './services/search.service';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CartComponent, HomepageComponent, HttpClientModule, NgIf],
+  imports: [RouterOutlet, RouterLink, CartComponent, HomepageComponent, HttpClientModule, NgIf, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -21,7 +23,8 @@ export class AppComponent implements OnInit {
   constructor(
     private oauthService: OAuthService,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
+    protected searchService: SearchService
   ) { }
 
 
@@ -57,6 +60,11 @@ export class AppComponent implements OnInit {
 
   logout(): void {
     this.oauthService.logOut();
+  }
+
+  //Non avendo più un header component, purtroppo la search va implementata qua
+  onSearch(): void {
+    this.searchService.search();
   }
 
 }

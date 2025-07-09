@@ -42,10 +42,10 @@ CREATE TABLE purchase (
 CREATE TABLE product_in_purchase ( /*Separato da purchase per gestire acquisti con più prodotti*/
 	id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	related_purchase INTEGER,
-	product INTEGER,
+    product_id INTEGER,
     quantity INTEGER,
     FOREIGN KEY (related_purchase) REFERENCES purchase (id),
-    FOREIGN KEY (product) REFERENCES product (id)
+    FOREIGN KEY (product_id ) REFERENCES product (id)
 );
 
 CREATE TABLE review (
@@ -78,4 +78,16 @@ CREATE TABLE product_in_cart (
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     FOREIGN KEY (cart_id) REFERENCES cart (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES product (id)
+);
+
+CREATE TABLE sale_alert (
+    id SERIAL PRIMARY KEY,
+    seller_id INTEGER NOT NULL,
+    related_purchase INTEGER NOT NULL,
+    shipping_address VARCHAR(255) NOT NULL,
+    total_amount NUMERIC(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (seller_id) REFERENCES app_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (related_purchase) REFERENCES purchase(id) ON DELETE CASCADE
+
 );

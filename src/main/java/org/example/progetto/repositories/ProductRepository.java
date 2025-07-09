@@ -2,6 +2,8 @@ package org.example.progetto.repositories;
 
 import org.example.progetto.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,6 +15,29 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByPriceBetween(Float minPrice, Float maxPrice);
     Product findById(Integer id);
 
+//    @Query("SELECT p FROM Product p WHERE " +
+//            "(:keywords) IS NULL OR (" +
+//            "  " +
+//            "  (" +
+//            "    LOWER(p.name) LIKE %:kw% OR " +
+//            "    LOWER(p.description) LIKE %:kw% OR " +
+//            "    LOWER(p.brand) LIKE %:kw%" +
+//            "  )" +
+//            ")")
+//    List<Product> searchByKeyword(@ng sParam("kw"String word) String keyword);
 
-
+    @Query("""
+        SELECT p FROM Product p
+        WHERE 
+            LOWER(p.name) LIKE %:query% OR
+            LOWER(p.brand) LIKE %:query% OR
+            LOWER(p.description) LIKE %:query%
+        AND (:minPrice IS NULL OR p.price >= :minPrice)
+        AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+        AND (:availableOnly = false OR p.quantity > 0)
+    """)
+    List<Product> search(@Param("query") String query,
+                         @Param("minPrice") Float minPrice,
+                         @Param("maxPrice") Float maxPrice,
+                         @Param("availableOnly") boolean availableOnly);
 }

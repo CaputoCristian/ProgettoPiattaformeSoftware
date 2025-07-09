@@ -13,21 +13,54 @@
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" routerLink="/user">Profile</a></li>
             <li><a class="dropdown-item" routerLink="/purchase">Purchases</a></li>
+            <li><a class="dropdown-item" routerLink="/sales">Sales Dashboard</a></li>
             <li><a class="dropdown-item" routerLink="/review">Reviews</a></li>
-            <li><a class="dropdown-item" routerLink="/admin">Admin Dashboard</a></li>
           </ul>
         </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" routerLink="/shop">My Marketplace</a>
         </li>
       </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-secondary" type="submit">Search</button>
-        <li class="nav-item">
-          <button class="btn btn-outline-secondary" (click)="logout()">Logout</button>
-        </li>
+      <form class="d-flex align-items-center gap-2" (ngSubmit)="onSearch()">
+        <!-- Campo principale di ricerca -->
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="searchService.searchQuery"
+          name="q"
+          placeholder="Cerca prodotti..."
+          required
+        />
+
+        <!-- Dropdown dei filtri -->
+        <div class="dropdown">
+          <button class="btn btn-outline-light dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Filtri
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end p-3" aria-labelledby="filterDropdown" style="min-width: 250px;">
+            <li class="mb-2">
+              <label for="minPrice" class="form-label">Prezzo Minimo</label>
+              <input type="number" id="minPrice" class="form-control" [(ngModel)]="searchService.minPrice" name="minPrice">
+            </li>
+            <li class="mb-2">
+              <label for="maxPrice" class="form-label">Prezzo Massimo</label>
+              <input type="number" id="maxPrice" class="form-control" [(ngModel)]="searchService.maxPrice" name="maxPrice">
+            </li>
+            <li class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="searchService.availableOnly" name="availableOnly" id="availableOnly">
+              <label class="form-check-label" for="availableOnly">
+                Solo disponibili
+              </label>
+            </li>
+          </ul>
+        </div>
+
+        <button class="btn btn-outline-light" type="submit">Cerca</button>
       </form>
+
+      <li class="nav-item">
+        <button class="btn btn-outline-light" (click)="logout()">Logout</button>
+      </li>
     </div>
   </div>
 </nav>
@@ -35,7 +68,6 @@
 
 <div class="main-container">
   <div class="content">
-    <app-home></app-home>
     <router-outlet></router-outlet>
   </div>
 

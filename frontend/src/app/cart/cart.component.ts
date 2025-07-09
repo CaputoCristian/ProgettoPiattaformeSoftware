@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {CartService, CarrelloProdottoDTO} from '../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {OAuthEvent, OAuthService} from 'angular-oauth2-oidc';
-import {filter} from 'rxjs';
+import {catchError, debounceTime, distinctUntilChanged, filter, of, Subject, takeUntil} from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -12,7 +12,7 @@ import {filter} from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule],
 })
-export class CartComponent implements OnInit {
+export class CartComponent implements OnInit, OnDestroy {
 
   cartItems: CarrelloProdottoDTO[] = [];
   isLoading: boolean = true;
@@ -22,42 +22,89 @@ export class CartComponent implements OnInit {
   // Variabili per l'ordine
   metodoPagamento: number = 1; // Ho messo giusto un valore di default cosi
   indirizzoSpedizione: string = '';
+  private refreshInterval: any;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
-    private CartService: CartService,
+    private cartService: CartService,
     private oauthService: OAuthService,
+    private changeDetector: ChangeDetectorRef
+
   ) { }
 
-  ngOnInit(): void { //evita di fare la richiesta prima dell'autenticazione, evita error 401
-    if (this.oauthService.hasValidAccessToken()) {
+  ngOnInit(): void {
+    // Caricamento iniziale degli elementi del carrello
+    this.loadCartItems();
+
+    // Sottoscrizione agli aggiornamenti del carrello
+    this.cartService.cartUpdated$
+      .pipe(
+        debounceTime(300), // Previene aggiornamenti troppo frequenti
+        distinctUntilChanged(), // Evita duplicati
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.loadCartItems();
+      });
+
+    // Aggiornamento periodico del carrello (ogni 30 secondi)
+    this.refreshInterval = setInterval(() => {
       this.loadCartItems();
-    } else {
-      this.oauthService.events
-        .pipe(filter((e: OAuthEvent) => e.type === 'token_received'))
-        .subscribe(() => this.loadCartItems());
-    }  }
+    }, 30000);
+  }
+
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   loadCartItems(): void {
-    this.CartService.getCartItems().subscribe(
-      items => {
-        this.cartItems = items;
-        this.calculateTotal();
-        this.isLoading = false;
-      },
-      error => {
-        console.error(error);
-        this.errorMessage = 'Errore nel caricamento degli articoli del carrello.';
-        this.isLoading = false;
-      }
-    );
+    this.isLoading = true;
+    this.cartService.getCartItems()
+      .pipe(
+        catchError(error => {
+          console.error('Errore nel caricamento del carrello:', error);
+          return of([]); // Ritorna un array vuoto in caso di errore
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: (items) => {
+          // Filtra i prodotti con quantità > 0
+          this.cartItems = items.filter(item => item.quantity > 0);
+          this.calculateTotal();
+          this.isLoading = false;
+          // Forza l'aggiornamento della vista
+          this.changeDetector.detectChanges();
+        },
+        error: (error) => {
+          console.error('Errore nel caricamento del carrello:', error);
+          this.cartItems = [];
+          this.totalAmount = 0;
+          this.isLoading = false;
+          // Forza l'aggiornamento della vista
+          this.changeDetector.detectChanges();
+        },
+        complete: () => {
+          this.isLoading = false;
+          // Forza l'aggiornamento della vista anche al completamento
+          this.changeDetector.detectChanges();
+        }
+      });
   }
+
+
 
   calculateTotal(): void {
-    this.totalAmount = this.cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    this.totalAmount = this.cartItems.reduce((acc, item) =>
+      acc + (item.price * item.quantity), 0);
   }
 
+
   increaseQuantity(idProdotto: number): void {
-    this.CartService.plusAdding(idProdotto).subscribe(
+    this.cartService.plusAdding(idProdotto).subscribe(
       () => {
         const item = this.cartItems.find(item => item.id === idProdotto);
         if (item) {
@@ -72,55 +119,51 @@ export class CartComponent implements OnInit {
     );
   }
 
-  decreaseQuantity(idProdotto: number): void {
-    this.CartService.minusRemoving(idProdotto).subscribe(
-      () => {
-        const item = this.cartItems.find(item => item.id === idProdotto);
-        if (item) {
-          item.quantity -= 1;
-          if (item.quantity <= 0) {
-            this.cartItems = this.cartItems.filter(item => item.id !== idProdotto);
-          }
-          this.calculateTotal();
+  decreaseQuantity(productId: number) {
+    this.cartService.minusRemoving(productId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.loadCartItems();
+        },
+        error: (error) => {
+          console.error('Errore nella diminuzione della quantità:', error);
+          // Mostro un messaggio di errore all'utente
         }
-      },
-      error => {
-        console.error(error);
-        alert('Errore durante la diminuzione della quantità.');
-      }
-    );
-  }
-
-  removeItem(idProdotto: number): void {
-    this.isLoading = true;
-    this.CartService.rimuoviDalCarrello(idProdotto).subscribe(
-      () => {
-        // Successo, rimuovo il prodotto dal carrello
-        this.cartItems = this.cartItems.filter(item => item.id !== idProdotto);
-        this.calculateTotal();
-        this.isLoading = false;
-      },
-      (error) => {
-        console.error('Errore durante la rimozione del prodotto dal carrello:', error);
-        this.isLoading = false;
-        alert('Errore durante la rimozione del prodotto dal carrello.');
-      }
-    );
+      });
   }
 
 
-  emptyCart(): void {
-    this.CartService.svuotaCarrello().subscribe(
-      () => {
-        this.cartItems = [];
-        this.totalAmount = 0;
-      },
-      error => {
-        console.error(error);
-        alert('Errore durante lo svuotamento del carrello.');
-      }
-    );
+  removeItem(productId: number) {
+    this.cartService.rimuoviDalCarrello(productId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.loadCartItems();
+        },
+        error: (error) => {
+          console.error('Errore nella rimozione:', error);
+          // Mostro un messaggio di errore all'utente
+        }
+      });
   }
+
+
+
+  emptyCart() {
+    this.cartService.svuotaCarrello()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.loadCartItems();
+        },
+        error: (error) => {
+          console.error('Errore nello svuotamento del carrello:', error);
+          // Mostro un messaggio di errore all'utente
+        }
+      });
+  }
+
 
   placeOrder(): void {
     if (!this.indirizzoSpedizione) {
@@ -128,7 +171,7 @@ export class CartComponent implements OnInit {
       return;
     }
 
-    this.CartService.ordina(this.metodoPagamento, this.indirizzoSpedizione).subscribe(
+    this.cartService.ordina(this.metodoPagamento, this.indirizzoSpedizione).subscribe(
       response => {
         alert('Ordine effettuato con successo.');
         this.cartItems = [];

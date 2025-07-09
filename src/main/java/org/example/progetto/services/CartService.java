@@ -3,14 +3,8 @@ package org.example.progetto.services;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import org.example.progetto.DTO.ProductInCartDTO;
-import org.example.progetto.entities.Cart;
-import org.example.progetto.entities.Product;
-import org.example.progetto.entities.ProductInCart;
-import org.example.progetto.entities.User;
-import org.example.progetto.repositories.CartRepository;
-import org.example.progetto.repositories.ProductInCartRepository;
-import org.example.progetto.repositories.ProductRepository;
-import org.example.progetto.repositories.UserRepository;
+import org.example.progetto.entities.*;
+import org.example.progetto.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,19 +28,19 @@ public class CartService {
     private UserRepository userRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private PurchaseRepository purchaseRepository;
+    @Autowired
+    private SaleAlertRepository saleAlertRepository;
 
-
-//    @Autowired
-//    private OrdineRepository ordineRepository;
-//
 //    @Autowired
 //    private transazioneRepository transazioneRepository;
 //
 //    @Autowired
 //    private spedizioneRepository spedizioneRepository;
-//
-//    @Autowired
-//    private prodottiordinatiRepository prodottiordinatiRepository;
+
+    @Autowired
+    private ProductInPurchaseRepository productInPurchaseRepository;
 
 
     @Autowired
@@ -123,7 +117,7 @@ public class CartService {
     }
 
     @Transactional
-    public void IncrementProductQuantity(String email, int idProdotto)
+    public void incrementProductQuantity(String email, int idProdotto)
             throws UserNotFoundException, ProductNotFoundException, InvalidQuantityException, InvalidOperationException {
 
         User cliente = userRepository.findByEmail(email);
@@ -167,258 +161,408 @@ public class CartService {
     @Transactional
     public void rimuoviDalCarrello(String email, int prodottoID)
             throws UserNotFoundException, InvalidOperationException {
+        try {
 
-        User cliente = userRepository.findByEmail(email);
-        if (cliente == null) {
-            throw new UserNotFoundException("Cliente non trovato!");
+            User cliente = userRepository.findByEmail(email);
+            if (cliente == null) {
+                throw new UserNotFoundException("Cliente non trovato!");
+            }
+
+            // Recupero e locko il carrello
+            Cart carrello = cartRepository.findByUserId(cliente.getId());
+            if (carrello == null) {
+                throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
+            }
+
+
+//            entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
+//
+//            // Recupero e locko l'elemento del carrello
+//            ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, prodottoID);
+//            if (cp == null) {
+//                throw new InvalidOperationException("Il prodotto non è presente nel carrello.");
+//            }
+//            entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
+//
+//            // Rimuovo il prodotto dal carrello
+//            productInCartRepository.delete(cp);
+
+            // Utilizziamo la query personalizzata per eliminare direttamente
+            productInCartRepository.deleteByCartAndProductId(carrello, prodottoID);
+
+
+            // Forza il flush per assicurarsi che la modifica venga scritta nel database
+            entityManager.flush();
+
+            // Log per debug
+            System.out.println("Prodotto " + prodottoID + " rimosso dal carrello dell'utente " + email);
+        } catch (Exception e) {
+            System.err.println("Errore durante la rimozione del prodotto: " + e.getMessage());
+            throw new InvalidOperationException("Errore durante la rimozione del prodotto: " + e.getMessage());
         }
-
-        // Recupero e locko il carrello
-        Cart carrello = cartRepository.findByUserId(cliente.getId());
-        if (carrello == null) {
-            throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
-        }
-        entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
-
-        // Recupero e locko l'elemento del carrello
-        ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, prodottoID);
-        if (cp == null) {
-            throw new InvalidOperationException("Il prodotto non è presente nel carrello.");
-        }
-        entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
-
-        // Rimuovo il prodotto dal carrello
-        productInCartRepository.delete(cp);
-    }
+}
 
     @Transactional
     public void decreaseProductQuantity(String email, int idProdotto)
             throws UserNotFoundException, InvalidOperationException {
+        try {
 
-        User cliente = userRepository.findByEmail(email);
-        if (cliente == null) {
-            throw new UserNotFoundException("Cliente non trovato!");
+            User cliente = userRepository.findByEmail(email);
+            if (cliente == null) {
+                throw new UserNotFoundException("Cliente non trovato!");
+            }
+
+            // Recupero e locko il carrello
+            Cart carrello = cartRepository.findByUserId(cliente.getId());
+            if (carrello == null) {
+                throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
+            }
+
+
+//            entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
+//
+//            // Recupero e locko l'elemento del carrello
+//            ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, idProdotto);
+//            if (cp == null) {
+//                throw new InvalidOperationException("Il prodotto non è presente nel carrello.");
+//            }
+//            entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
+//            ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, idProdotto);
+//            if (cp == null) {
+//                throw new InvalidOperationException("Prodotto non trovato nel carrello.");
+//            }
+//
+//            if (!cp.getCart().equals(carrello)) {
+//                throw new InvalidOperationException("Operazione non valida: il carrello non corrisponde");
+//            }
+//
+//            // Decremento o rimuovo il prodotto dal carrello
+//            if (cp.getQuantity() > 1) {
+//                cp.setQuantity(cp.getQuantity() - 1);
+//                productInCartRepository.save(cp);
+//            } else {
+//                productInCartRepository.delete(cp);
+//            }
+
+
+            ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, idProdotto);
+            if (cp == null) {
+                throw new InvalidOperationException("Prodotto non trovato nel carrello.");
+            }
+
+            if (cp.getQuantity() <= 1) {
+                // Se la quantità è 1 o meno, eliminiamo direttamente il prodotto
+                productInCartRepository.deleteByCartAndProductId(carrello, idProdotto);
+            } else {
+                cp.setQuantity(cp.getQuantity() - 1);
+                productInCartRepository.save(cp);
+            }
+
+            // Forza il flush per assicurarsi che le modifiche vengano scritte nel database
+            entityManager.flush();
+
+            System.out.println("Quantità aggiornata per il prodotto " + idProdotto);
+
+        } catch (Exception e) {
+
+            System.err.println("Errore durante la diminuzione della quantità: " + e.getMessage());
+            throw new InvalidOperationException("Errore durante la diminuzione della quantità: " + e.getMessage());
         }
 
-        int idUtente = cliente.getId();
-
-        // Recupero e locko il carrello
-        Cart carrello = cartRepository.findByUserId(idUtente);
-        if (carrello == null) {
-            throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
-        }
-        entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
-
-        // Recupero e locko l'elemento del carrello
-        ProductInCart cp = productInCartRepository.findByCartAndProductId(carrello, idProdotto);
-        if (cp == null) {
-            throw new InvalidOperationException("Il prodotto non è presente nel carrello.");
-        }
-        entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
-
-        if (!cp.getCart().equals(carrello)) {
-            throw new InvalidOperationException("Operazione non valida: il carrello non corrisponde");
-        }
-
-        // Decremento o rimuovo il prodotto dal carrello
-        if (cp.getQuantity() > 1) {
-            cp.setQuantity(cp.getQuantity() - 1);
-            productInCartRepository.save(cp);
-        } else {
-            productInCartRepository.delete(cp);
-        }
     }
 
     @Transactional
     public void emptyCart(String email) throws UserNotFoundException, InvalidOperationException {
-        User cliente = userRepository.findByEmail(email);
-        if (cliente == null) {
+
+        try {
+
+
+                User cliente = userRepository.findByEmail(email);
+            if (cliente == null) {
+                throw new UserNotFoundException("Cliente non trovato!");
+            }
+
+            // Recupero e locko il carrello
+            Cart carrello = cartRepository.findByUserId(cliente.getId());
+            if (carrello == null) {
+                throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
+            }
+//            entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
+//
+//            // Recupero e locko tutti gli elementi del carrello
+//            List<ProductInCart> cartProducts = productInCartRepository.findByCartId(carrello.getCartId());
+//            for (ProductInCart cp : cartProducts) {
+//                entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
+//            }
+//
+//            // Svuoto il carrello
+//            productInCartRepository.deleteAllByCart(carrello);
+
+            // Utilizziamo la query personalizzata per eliminare direttamente
+            productInCartRepository.deleteByCart(carrello);
+            entityManager.flush();
+
+
+            System.out.println("Carrello svuotato per l'utente: " + email);
+        } catch (Exception e) {
+            System.err.println("Errore durante lo svuotamento del carrello: " + e.getMessage());
+            throw new InvalidOperationException("Errore durante lo svuotamento del carrello: " + e.getMessage());
+        }
+
+    }
+
+    /// Versione con lock più sicuri
+
+    @Transactional
+    public void buyCart(String email, int paymentMethod, String shippingAddress)
+            throws UserNotFoundException, InvalidOperationException {
+
+        // Fase 1: Verifica preliminare e lock
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
             throw new UserNotFoundException("Cliente non trovato!");
         }
 
-        // Recupero e locko il carrello
-        Cart carrello = cartRepository.findByUserId(cliente.getId());
-        if (carrello == null) {
-            throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
+        Cart cart = cartRepository.findByUserId(user.getId());
+        if (cart == null) {
+            throw new InvalidOperationException("Carrello non trovato.");
         }
-        entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
+        entityManager.lock(cart, LockModeType.PESSIMISTIC_WRITE);
 
-        // Recupero e locko tutti gli elementi del carrello
-        List<ProductInCart> cartProducts = productInCartRepository.findByCartId(carrello.getCartId());
-        for (ProductInCart cp : cartProducts) {
-            entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
+        List<ProductInCart> userProducts = productInCartRepository.findByCartId(cart.getCartId());
+        if (userProducts.isEmpty()) {
+            throw new InvalidOperationException("Il carrello è vuoto.");
         }
 
-        // Svuoto il carrello
-        productInCartRepository.deleteAllByCart(carrello);
+        // Fase 2: Verifica disponibilità e lock prodotti
+        Map<Product, Integer> productQuantityMap = new HashMap<>();
+        for (ProductInCart cp : userProducts) {
+            Product product = cp.getProduct();
+            entityManager.lock(product, LockModeType.PESSIMISTIC_WRITE);
+
+            if (product.getQuantity() < cp.getQuantity()) {
+                // Rollback automatico grazie all'annotazione @Transactional
+                throw new InvalidOperationException(
+                        "Quantità non disponibile per il prodotto: " + product.getName());
+            }
+
+            productQuantityMap.put(product, cp.getQuantity());
+        }
+
+        // Fase 3: Verifica pagamento
+        if (!isPaymentMethodValid(paymentMethod)) {
+            throw new InvalidOperationException("Metodo di pagamento non valido o rifiutato.");
+        }
+
+        try {
+            // Fase 4: Creazione e salvataggio dell'acquisto
+            Purchase purchase = new Purchase();
+            purchase.setBuyer(user);
+            purchase.setTime(LocalDateTime.now());
+            purchase = purchaseRepository.save(purchase);
+            entityManager.flush(); // Forza il flush per rilevare eventuali errori
+
+            // Fase 5: Creazione e salvataggio dei ProductInPurchase
+            List<ProductInPurchase> acquisti = new ArrayList<>();
+            for (Map.Entry<Product, Integer> entry : productQuantityMap.entrySet()) {
+                Product product = entry.getKey();
+                int quantity = entry.getValue();
+
+                // Aggiorna la quantità del prodotto
+                product.setQuantity(product.getQuantity() - quantity);
+                productRepository.save(product);
+
+                ProductInPurchase pip = new ProductInPurchase();
+                pip.setProduct(product);
+                pip.setQuantity(quantity);
+                pip.setRelatedPurchase(purchase);
+                acquisti.add(pip);
+            }
+
+            productInPurchaseRepository.saveAll(acquisti);
+            entityManager.flush(); // Forza il flush per rilevare eventuali errori
+
+            // Fase 6: Aggiornamento dell'acquisto con i prodotti
+            purchase.setProductsInPurchase(acquisti);
+            purchaseRepository.save(purchase);
+
+            // Fase 7: Creazione notifiche venditori
+            Map<User, List<ProductInCart>> venditePerVenditore = new HashMap<>();
+            for (ProductInCart cp : userProducts) {
+                User venditore = cp.getProduct().getShop().getSeller();
+                venditePerVenditore.computeIfAbsent(venditore, k -> new ArrayList<>()).add(cp);
+            }
+
+            for (Map.Entry<User, List<ProductInCart>> entry : venditePerVenditore.entrySet()) {
+                User venditore = entry.getKey();
+                List<ProductInCart> prodotti = entry.getValue();
+
+                BigDecimal totale = prodotti.stream()
+                        .map(p -> BigDecimal.valueOf(p.getProduct().getPrice())
+                                .multiply(BigDecimal.valueOf(p.getQuantity())))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                SaleAlert alert = new SaleAlert();
+                alert.setSeller(venditore);
+                alert.setPurchase(purchase);
+                alert.setShippingAddress(shippingAddress);
+                alert.setTotalAmount(totale.floatValue());
+                saleAlertRepository.save(alert);
+            }
+
+            // Fase 8: Pulizia carrello
+            productInCartRepository.deleteAll(userProducts);
+
+        } catch (Exception e) {
+            // Il rollback avverrà automaticamente grazie all'annotazione @Transactional
+            throw new InvalidOperationException("Errore durante l'acquisto: " + e.getMessage());
+        }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 //    @Transactional
-//    public void buyCart(String email, int metodoDiPagamento, String indirizzoSpedizione)
+//    public void buyCart(String email, int paymentMethod, String shippingAddress)
 //            throws UserNotFoundException, InvalidOperationException {
 //
-//        User cliente = userRepository.findByEmail(email);
-//        if (cliente == null) {
+//        User user = userRepository.findByEmail(email);
+//        if (user == null) {
 //            throw new UserNotFoundException("Cliente non trovato!");
 //        }
-//        int idCliente = cliente.getId();
+//        int userId = user.getId();
 //
 //        // Recupero e locko il carrello
-//        Cart carrello = cartRepository.findByIdCliente(cliente.getId());
-//        if (carrello == null) {
+//        Cart cart = cartRepository.findByUserId(userId);
+//        if (cart == null) {
 //            throw new InvalidOperationException("Il carrello dell'utente non è stato trovato.");
 //        }
-//        entityManager.lock(carrello, LockModeType.PESSIMISTIC_WRITE);
+//        entityManager.lock(cart, LockModeType.PESSIMISTIC_WRITE);
 //
 //        // Recupero e locko gli elementi del carrello
-//        Set<ProductInCart> prodottiUser = productInCartRepository.findByCarrelloId(carrello.getIdCarrello());
-//        if (prodottiUser.isEmpty()) {
+//        List<ProductInCart> userProducts = productInCartRepository.findByCartId(cart.getCartId());
+//        if (userProducts.isEmpty()) {
 //            throw new InvalidOperationException("Il carrello è vuoto. Aggiungi prodotti prima di procedere all'ordine.");
 //        }
 //
 //        // Ordino gli elementi per evitare deadlock
-//        List<ProductInCart> prodottiUserList = new ArrayList<>(prodottiUser);
-//        prodottiUserList.sort(Comparator.comparingInt(ProductInCart::getId));
+//        userProducts.sort(Comparator.comparingInt(ProductInCart::getId));
 //
-//        // Verifico la disponibilità e locko i prodotti
-//        for (ProductInCart cp : prodottiUserList) {
-//            // Lock dell'elemento del carrello
-//            entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
+//        //Prodotti da ordinare
+//        List<ProductInPurchase> acquisti = new ArrayList<>();
 //
-//            Product prodotto = productRepository.findById(cp.getId())
-//            // Lock del prodotto
-//            entityManager.lock(prodotto, LockModeType.PESSIMISTIC_WRITE);
-//
-//            // Verifico la disponibilità
-//            if (prodotto.getQuantity() < cp.getQuantity()) {
-//                throw new InvalidOperationException("La quantità del prodotto '" + prodotto.getName() + "' non è sufficiente per completare l'ordine.");
-//            }
-//
-//            // Decremento la disponibilità del prodotto
-//            prodotto.setQuantity(prodotto.getQuantity() - cp.getQuantity());
-//            productRepository.save(prodotto);
+//        if (!isPaymentMethodValid(paymentMethod)) {
+//            throw new InvalidOperationException("Metodo di pagamento non valido o rifiutato.");
 //        }
 //
 //        // Creazione dell'ordine e della transazione
-//        ordine ordine = new ordine();
-//        transazione transazione = new transazione();
+//        Purchase purchase = new Purchase();
 //
-//        metododipagamento met = metododipagamentoRepository.findById(metodoDiPagamento);
-//        if (met == null) {
-//            throw new InvalidOperationException("Metodo di pagamento non trovato");
-//        }
+//        // Verifico la disponibilità e locko i prodotti
+//        for (ProductInCart cp : userProducts) {
+//            // Lock dell'elemento del carrello
+//            entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
 //
-//        ordine.setId_carrello(carrello.getIdCarrello());
-//        ordine.setIdCliente(cliente.getIdCliente());
-//        ordine.setOra(LocalTime.now());
-//        ordine.setData(LocalDateTime.now());
-//        ordine.setStato("Processamento in corso...");
-//        ordineRepository.save(ordine);
+////          Product product = productRepository.findById(cp.getId());
+//            Product product = cp.getProduct();
 //
-//        transazione.setMetodoDiPagamento(met);
-//        transazione.setIdOrdine(ordine.getIdOrdine());
-//        transazione.setOra(LocalTime.now());
-//        transazione.setData(Instant.now());
-//        transazione.setImporto(calcolaImporto(prodottiUser));
+//            // Lock del prodotto
+//            entityManager.lock(product, LockModeType.PESSIMISTIC_WRITE);
 //
-//        spedizione spedizione = new spedizione();
-//        spedizione.setIdOrdine(ordine.getIdOrdine());
-//        spedizione.setIndirizzoSpedizione(indirizzoSpedizione);
-//        spedizione.setDataPrevista(Instant.now().plus(7, ChronoUnit.DAYS));
-//        spedizione.setStato("In corso...");
-//
-//        boolean esitoPagamento = processaPagamento(met, transazione.getImporto());
-//
-//        if (esitoPagamento) {
-//            transazione.setEsito(true);
-//            ordine.setStato("Pagamento completato");
-//            svuotaCarrello(email);
-//
-//            // Salvo i prodotti ordinati
-//            for (carrelloprodotto cp : prodottiUserList) {
-//                prodottiordinati po = new prodottiordinati();
-//                po.setIdProdotto(cp.getProdottoId());
-//                po.setIdUtente(cliente.getIdCliente());
-//                po.setIdOrdine(ordine.getIdOrdine());
-//                po.setQuantita(cp.getQuantita());
-//                prodottiordinatiRepository.save(po);
+//            // Verifico la disponibilità
+//            if (product.getQuantity() < cp.getQuantity()) {
+//                throw new InvalidOperationException("La quantità del prodotto '" + product.getName() + "' non è sufficiente per completare l'ordine.");
 //            }
 //
-//        } else {
-//            transazione.setEsito(false);
-//            ordine.setStato("Pagamento fallito");
+//            // Decremento la disponibilità del prodotto
+//            product.setQuantity(product.getQuantity() - cp.getQuantity());
+//            productRepository.save(product);
 //
-//            // Ripristino la quantità dei prodotti
-//            for (carrelloprodotto cp : prodottiUserList) {
-//                prodotto prodotto = productRepository.findById(cp.getProdottoId())
-//                        .orElseThrow(() -> new InvalidOperationException("Prodotto non trovato"));
-//                // Lock del prodotto
-//                entityManager.lock(prodotto, LockModeType.PESSIMISTIC_WRITE);
+//            //Conversione da productInCart e ProductInPurchase
+//            ProductInPurchase pip = new ProductInPurchase();
+//            pip.setProduct(cp.getProduct()); // oggetto intero, non nome
+//            pip.setQuantity(cp.getQuantity()); // intero, non stringa
+//            pip.setRelatedPurchase(purchase);
+//            acquisti.add(pip);
 //
-//                prodotto.setQuantita(prodotto.getQuantita() + cp.getQuantita());
-//                productRepository.save(prodotto);
-//            }
+//            // Salva i prodotti dell'acquisto
+//            productInPurchaseRepository.saveAll(acquisti);
 //
-//            throw new InvalidOperationException("Il pagamento è fallito. Riprovare.");
+//            // Aggiorna l'acquisto con i prodotti
+//            purchase.setProductsInPurchase(acquisti);
+//            purchaseRepository.save(purchase);
+//
+//
 //        }
 //
-//        // Salvo le transazioni e la spedizione
-//        transazioneRepository.save(transazione);
-//        spedizioneRepository.save(spedizione);
-//        ordineRepository.save(ordine);
+////      SaleAllert vendita = new SaleAllert();
+//
+//        //TODO set/gestione metodo di pagamento
+//
+//        purchase.setBuyer(user);
+//        purchase.setTime(LocalDateTime.now());
+//        purchase.setProductsInPurchase(acquisti);
+//        purchaseRepository.save(purchase); // salva tutto grazie al cascade MERGE
+//
+//        productInPurchaseRepository.saveAll(acquisti); // se non fai cascading su persist
+//
+//        userProducts.sort(Comparator.comparingInt(ProductInCart::getId));
+//        Map<User, List<ProductInCart>> venditePerVenditore = new HashMap<>();
+//
+//        // Verifica disponibilità prodotti e costruzione struttura per alert
+//        for (ProductInCart cp : userProducts) {
+//            entityManager.lock(cp, LockModeType.PESSIMISTIC_WRITE);
+//
+//            Product product = productRepository.findById(cp.getProduct().getId());
+//            entityManager.lock(product, LockModeType.PESSIMISTIC_WRITE);
+//
+//            if (product.getQuantity() < cp.getQuantity()) {
+//                throw new InvalidOperationException("La quantità del prodotto '" + product.getName() + "' non è sufficiente.");
+//            }
+//
+//            product.setQuantity(product.getQuantity() - cp.getQuantity());
+//            productRepository.save(product);
+//
+//            User venditore = product.getShop().getSeller();
+//            venditePerVenditore.computeIfAbsent(venditore, k -> new ArrayList<>()).add(cp);
+//        }
+//
+//
+//        // Creazione notifiche per venditori
+//        for (Map.Entry<User, List<ProductInCart>> entry : venditePerVenditore.entrySet()) {
+//            User venditore = entry.getKey();
+//            List<ProductInCart> prodotti = entry.getValue();
+//
+//            BigDecimal totale = prodotti.stream()
+//                    .map(p -> BigDecimal.valueOf(p.getProduct().getPrice()).multiply(BigDecimal.valueOf(p.getQuantity())))
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//            SaleAlert alert = new SaleAlert();
+//            alert.setSeller(venditore);
+//            alert.setPurchase(purchase);
+//            alert.setShippingAddress(shippingAddress);
+//            alert.setTotalAmount(totale.floatValue());
+//            saleAlertRepository.save(alert);
+//        }
+//
+//        productInCartRepository.deleteAll(userProducts);
 //    }
 
-//    private static BigDecimal calcolaImporto(Set<carrelloprodotto> prodottiUser) {
-//        BigDecimal totale = BigDecimal.ZERO;
-//
-//        if (prodottiUser == null || prodottiUser.isEmpty()) {
-//            return totale;
-//        }
-//
-//        for (carrelloprodotto cp : prodottiUser) {
-//            prodotto prodotto = cp.getProdotto();
-//            BigDecimal prezzo = prodotto.getPrezzo();
-//            int quantita = cp.getQuantita();
-//
-//            if (prezzo == null || prezzo.compareTo(BigDecimal.ZERO) <= 0) {
-//                throw new IllegalArgumentException("Prezzo del prodotto " + prodotto.getNome() + " non valido.");
-//            }
-//            if (quantita <= 0) {
-//                throw new IllegalArgumentException("Quantità del prodotto " + prodotto.getNome() + " non valida.");
-//            }
-//
-//            BigDecimal costoProdotto = prezzo.multiply(BigDecimal.valueOf(quantita));
-//            totale = totale.add(costoProdotto);
-//        }
-//
-//        return totale;
-//    }
 
-//    private boolean processaPagamento(metododipagamento metodoDiPagamento, BigDecimal amount) {
-//
-//        if (metodoDiPagamento == null) {
-//            System.out.println("Errore: nessun metodo di pagamento selezionato.");
-//            return false;
-//        }
-//
-//        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-//            System.out.println("Errore: importo non valido. Valore importo: " + amount);
-//            return false;
-//        }
-//
-//        System.out.println("Pagamento in corso con il metodo selezionato: " + metodoDiPagamento.getSelezione());
-//        System.out.println("Importo da pagare: " + amount);
-//
-//        boolean pagamentoRiuscito = RANDOM.nextInt(100) < 80;
-//
-//        if (pagamentoRiuscito) {
-//            System.out.println("Pagamento effettuato con successo!");
-//            return true;
-//        } else {
-//            System.out.println("Pagamento fallito.");
-//            return false;
-//        }
-//    }
+    private boolean isPaymentMethodValid(int paymentMethod) {
+        // Per ora simuliamo approvazione casuale
+        return new Random().nextBoolean();
+    }
 
 
     @Transactional
@@ -435,7 +579,12 @@ public class CartService {
             cart = cartRepository.save(cart);
         }
 
-        List<ProductInCart> prodottiUser = new ArrayList<>(productInCartRepository.findByCartId(cart.getCartId()));
+//        List<ProductInCart> prodottiUser = new ArrayList<>(productInCartRepository.findByCartId(cart.getCartId()));
+
+        List<ProductInCart> prodottiUser = productInCartRepository.findByCartId(cart.getCartId())
+                .stream()
+                .filter(p -> p.getQuantity() > 0)
+                .collect(Collectors.toList());
 
         return prodottiUser.stream()
                 .map(cp -> {

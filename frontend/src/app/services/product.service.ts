@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Product } from '../models/product';
@@ -49,6 +49,14 @@ export class ProductService {
     return this.httpClient.post(`${this.baseUrl}/${prodotto.id}`, null, { headers: this.getHeaders(), params });
   }
 
+  searchProducts(query: string, minPrice?: number, maxPrice?: number, availableOnly?: boolean): Observable<Product[]> {
+    let params = new HttpParams().set('q', query);
 
+    if (minPrice != null) params = params.set('minPrice', minPrice.toString());
+    if (maxPrice != null) params = params.set('maxPrice', maxPrice.toString());
+    if (availableOnly) params = params.set('availableOnly', 'true');
+
+    return this.httpClient.get<Product[]>(`${this.baseUrl}/products/search`, { params });
+  }
 
 }

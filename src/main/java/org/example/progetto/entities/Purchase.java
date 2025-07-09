@@ -35,6 +35,6 @@ public class Purchase {
     @Column(name = "time", nullable = false, length = 50)
     private LocalDateTime time;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "relatedPurchase", cascade = CascadeType.ALL)
     private List<ProductInPurchase> productsInPurchase;
 }

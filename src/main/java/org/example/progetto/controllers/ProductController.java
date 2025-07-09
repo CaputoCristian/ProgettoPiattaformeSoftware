@@ -85,4 +85,28 @@ public class ProductController {
         Product updatedProduct = productService.updateProduct(id, request);
         return ResponseEntity.ok(updatedProduct);
     }
+
+//    @GetMapping("/search")
+//    public ResponseEntity<List<Product>> searchProducts(
+//            @RequestParam("q") String query,
+//            @RequestParam(value = "minPrice", required = false) Float minPrice,
+//            @RequestParam(value = "maxPrice", required = false) Float maxPrice,
+//            @RequestParam(value = "availableOnly", defaultValue = "false") boolean availableOnly
+//    ) {
+//        List<Product> results = productService.advancedSearch(query, minPrice, maxPrice, availableOnly);
+//        return ResponseEntity.ok(results);
+//    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/search")
+    public ResponseEntity<List<Product>> searchProducts(
+            @RequestParam("q") String query,
+            @RequestParam(name = "minPrice", required = false) Float minPrice,
+            @RequestParam(name = "maxPrice", required = false) Float maxPrice,
+            @RequestParam(name = "availableOnly", required = false) Boolean availableOnly) {
+
+        List<Product> results = productService.searchProducts(query, minPrice, maxPrice, availableOnly != null && availableOnly);
+        return ResponseEntity.ok(results);
+    }
+
 }

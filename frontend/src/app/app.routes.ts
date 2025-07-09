@@ -8,15 +8,15 @@ import {AppComponent} from './app.component';
 import {HomepageComponent} from './homepage/homepage.component';
 import {ProductComponent} from './product/product.component';
 import {MarketplaceComponent} from './marketplace/marketplace.component';
+import {SearchResultComponent} from './search-result/search-result.component';
 
 export const routes: Routes = [
-  { path: 'products', component:HomepageComponent, canActivate: [AuthGuard]},
+  { path: '', component:HomepageComponent, pathMatch: 'full'},
   { path: 'user', component:UserComponent},
-  { path: 'admin', component:AdminComponent},
   { path: 'login', component:LoginComponent },
-  { path: 'prodotto', component:ProductComponent },
+  { path: 'product', component:ProductComponent },
   { path: 'shop', component:MarketplaceComponent },
-
+  { path: 'search', component: SearchResultComponent }
 
 ];
 @NgModule({

@@ -12,23 +12,21 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-
-
 public class ProductInPurchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private int id;
 
-    @Basic
-    @Column(name = "product", nullable = true, length = 90)
-    private String product;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     @Basic
     @Column(name = "quantity", nullable = true, length = 90)
-    private String quantity;
+    private int quantity;
 
-    @ManyToOne
-    @JoinColumn(name = "related_purchase") //???
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "related_purchase")
     private Purchase relatedPurchase;
 }

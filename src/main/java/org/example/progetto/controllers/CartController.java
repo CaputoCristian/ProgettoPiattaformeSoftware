@@ -1,5 +1,6 @@
 package org.example.progetto.controllers;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.example.progetto.DTO.ProductInCartDTO;
@@ -69,8 +70,7 @@ public class CartController {
     }
 
 
-
-    @PreAuthorize("hasRole('default-roles')")
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/removeAll")
     public ResponseEntity<Map<String, String>> emptyCart(Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
@@ -90,11 +90,13 @@ public class CartController {
     }
 
 
-
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/removeItem")
     public ResponseEntity<Map<String, String>> removeItem(
             @RequestParam @NotNull @Positive int idProdotto, Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+
+        System.out.println("Rimozione prodotto dal carrello: " + email + ";"+ idProdotto);
 
         try {
             cartService.rimuoviDalCarrello(email, idProdotto);
@@ -106,6 +108,9 @@ public class CartController {
             response.put("error", "Utente non trovato.");
             return ResponseEntity.status(404).body(response);
         } catch (InvalidOperationException e) {
+
+            System.out.println("Errore rimozione prodotto dal carrello: " + email + ";"+ idProdotto);
+
             Map<String, String> response = new HashMap<>();
             response.put("error", e.getMessage());
             return ResponseEntity.status(400).body(response);
@@ -153,29 +158,29 @@ public class CartController {
     }
 
 
-//    // Effettua un ordine
-//    @PostMapping("/buy")
-//    public ResponseEntity<Map<String, String>> buyCart(
-//            @RequestParam @NotNull @Min(1) int metodoPagamento,
-//            @RequestParam @NotNull String indirizzoSpedizione) {
-//        var jwt = (CustomJwt) SecurityContextHolder.getContext().getAuthentication();
-//        String email = jwt.getName();
-//
-//        try {
-//            cartService.buyCart(email, metodoPagamento, indirizzoSpedizione);
-//            Map<String, String> response = new HashMap<>();
-//            response.put("message", "Ordine effettuato con successo.");
-//            return ResponseEntity.ok(response);
-//        } catch (UserNotFoundException e) {
-//            Map<String, String> response = new HashMap<>();
-//            response.put("error", "Utente non trovato.");
-//            return ResponseEntity.status(404).body(response);
-//        } catch (InvalidOperationException e) {
-//            Map<String, String> response = new HashMap<>();
-//            response.put("error", e.getMessage());
-//            return ResponseEntity.status(400).body(response);
-//        }
-//    }
+    // Effettua un ordine
+    @PostMapping("/buy")
+    public ResponseEntity<Map<String, String>> buyCart(@RequestParam @NotNull @Min(1) int metodoPagamento, @RequestParam @NotNull String indirizzoSpedizione, Authentication authentication) {
+
+        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+
+        try {
+            System.out.println("Inizio effettuazione ordine: " + email);
+            cartService.buyCart(email, metodoPagamento, indirizzoSpedizione);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Ordine effettuato con successo.");
+            return ResponseEntity.ok(response);
+        } catch (UserNotFoundException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "Utente non trovato.");
+            return ResponseEntity.status(404).body(response);
+        } catch (InvalidOperationException e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", e.getMessage());
+            System.out.println("Errore effettuazione ordine: " + email);
+            return ResponseEntity.status(400).body(response);
+        }
+    }
 
 
 
@@ -187,7 +192,7 @@ public class CartController {
 
         try {
             System.out.println("Richiesta di plus ricevuta:" + email + ";"+ idProdotto);
-            cartService.IncrementProductQuantity(email, idProdotto);
+            cartService.incrementProductQuantity(email, idProdotto);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Quantità aumentata con successo.");
             return ResponseEntity.ok(response);
