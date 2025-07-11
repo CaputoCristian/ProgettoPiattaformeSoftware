@@ -36,7 +36,8 @@ CREATE TABLE purchase (
 	id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
 	buyer INTEGER,
 	time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (buyer) REFERENCES app_user (id)
+    FOREIGN KEY (buyer) REFERENCES app_user (id),
+    total_price DECIMAL(10, 2) DEFAULT 0.00
 );
 
 CREATE TABLE product_in_purchase ( /*Separato da purchase per gestire acquisti con più prodotti*/

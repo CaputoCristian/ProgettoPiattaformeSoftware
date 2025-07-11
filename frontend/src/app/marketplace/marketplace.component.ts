@@ -3,13 +3,20 @@ import { ProductService } from '../services/product.service';
 import { CartService } from '../services/cart.service';
 import {CommonModule, NgFor, NgIf} from '@angular/common';
 import { OAuthService } from 'angular-oauth2-oidc';
-import {Product} from '../models/product';
 import {provideHttpClient} from '@angular/common/http';
 import {UserService} from '../services/user.service';
 import {MarketplaceService} from '../services/marketplace.service';
 import {FormsModule, NgModel} from '@angular/forms';
 
+export interface Product {
+  id: number;
+  name: string;
+  brand: string;
+  description: string;
+  price: number;
+  quantity: number;
 
+}
 
 @Component({
   selector: 'app-marketplace',
@@ -17,6 +24,7 @@ import {FormsModule, NgModel} from '@angular/forms';
   templateUrl: './marketplace.component.html',
   styleUrl: './marketplace.component.css'
 })
+
 export class MarketplaceComponent implements OnInit{
 
   prodotti: Product[] = [];

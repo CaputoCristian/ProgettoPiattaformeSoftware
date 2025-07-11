@@ -1,6 +1,7 @@
 package org.example.progetto.repositories;
 
 import org.example.progetto.entities.ProductInPurchase;
+import org.example.progetto.entities.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +12,6 @@ import java.util.List;
 public interface ProductInPurchaseRepository extends JpaRepository<ProductInPurchase, Long> {
     List<ProductInPurchase> findByRelatedPurchase_Id(Long purchaseId);
     List<ProductInPurchase> findProductInPurchaseById(Long purchaseId);
+    List<ProductInPurchase> findByRelatedPurchase(Purchase purchase);
     List<ProductInPurchase> findByRelatedPurchase_TimeBetween(Date startTime, Date endTime);
 }

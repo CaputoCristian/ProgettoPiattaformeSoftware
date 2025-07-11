@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -37,9 +39,13 @@ public class Product {
     @Column(name = "description", nullable = true, length = 500)
     private String description;
 
+//    @Basic
+//    @Column(name = "price", nullable = true)
+//    private Float price;
+
     @Basic
-    @Column(name = "price", nullable = true)
-    private Float price;
+    @Column(name ="price", precision = 10, scale = 2)
+    private BigDecimal price = BigDecimal.ZERO;
 
     @Basic
     @Column(name = "quantity", nullable = true)

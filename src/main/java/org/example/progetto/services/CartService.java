@@ -362,12 +362,14 @@ public class CartService {
             purchase = purchaseRepository.save(purchase);
             entityManager.flush(); // Forza il flush per rilevare eventuali errori
 
+            BigDecimal totalePerAcquisto = BigDecimal.ZERO;
+
             // Fase 5: Creazione e salvataggio dei ProductInPurchase
             List<ProductInPurchase> acquisti = new ArrayList<>();
             for (Map.Entry<Product, Integer> entry : productQuantityMap.entrySet()) {
                 Product product = entry.getKey();
                 int quantity = entry.getValue();
-
+                totalePerAcquisto = totalePerAcquisto.add((BigDecimal.valueOf(quantity ).multiply(product.getPrice())));
                 // Aggiorna la quantità del prodotto
                 product.setQuantity(product.getQuantity() - quantity);
                 productRepository.save(product);
@@ -384,6 +386,7 @@ public class CartService {
 
             // Fase 6: Aggiornamento dell'acquisto con i prodotti
             purchase.setProductsInPurchase(acquisti);
+            purchase.setTotalPrice(totalePerAcquisto);
             purchaseRepository.save(purchase);
 
             // Fase 7: Creazione notifiche venditori
@@ -398,8 +401,7 @@ public class CartService {
                 List<ProductInCart> prodotti = entry.getValue();
 
                 BigDecimal totale = prodotti.stream()
-                        .map(p -> BigDecimal.valueOf(p.getProduct().getPrice())
-                                .multiply(BigDecimal.valueOf(p.getQuantity())))
+                        .map(p -> p.getProduct().getPrice().multiply(BigDecimal.valueOf(p.getQuantity())))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
                 SaleAlert alert = new SaleAlert();
@@ -591,7 +593,7 @@ public class CartService {
                     ProductInCartDTO dto = new ProductInCartDTO();
                     dto.setId(cp.getProduct().getId());
                     dto.setName(cp.getProduct().getName());
-                    dto.setPrice(cp.getProduct().getPrice());
+                    dto.setPrice(cp.getProduct().getPrice().floatValue());
                     dto.setQuantity(cp.getQuantity());
                     return dto;
                 })

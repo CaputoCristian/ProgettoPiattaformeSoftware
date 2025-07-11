@@ -15,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -74,7 +75,7 @@ public class ProductService {
         product.setName(updateRequest.getName ());
         product.setBrand(updateRequest.getBrand());
         product.setDescription(updateRequest.getDescription());
-        product.setPrice(updateRequest.getPrice());
+        product.setPrice(BigDecimal.valueOf(updateRequest.getPrice()));
         product.setQuantity(updateRequest.getQuantity());
         product.setType(updateRequest.getType());
 

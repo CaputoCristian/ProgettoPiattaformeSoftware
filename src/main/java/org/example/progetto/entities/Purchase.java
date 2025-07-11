@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,10 @@ public class Purchase {
     @Column(name = "time", nullable = false, length = 50)
     private LocalDateTime time;
 
+    @Column(name ="total_price", precision = 10, scale = 2)
+    private BigDecimal totalPrice = BigDecimal.ZERO;
+
     @OneToMany(mappedBy = "relatedPurchase", cascade = CascadeType.ALL)
     private List<ProductInPurchase> productsInPurchase;
+
 }

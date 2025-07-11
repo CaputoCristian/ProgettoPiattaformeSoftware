@@ -1,0 +1,44 @@
+<div *ngIf="isLoading">
+  <p>Caricamento acquisti...</p>
+</div>
+
+<div *ngIf="errorMessage">
+  <div class="alert alert-danger">{{ errorMessage }}</div>
+</div>
+
+<div *ngIf="!isLoading && !errorMessage">
+  <div class="container py-4">
+    <h2 class="mb-4">I tuoi acquisti</h2>
+
+    <div class="row g-3">
+      <div class="col-md-12 mb-4" *ngFor="let purchase of purchases">
+        <div class="card shadow-sm border-0" style="background-color: #f9f9f9;">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0 fw-bold text-dark">
+                Acquisto #{{ purchase.id }}
+              </h5>
+              <small class="text-muted">{{ purchase.date | date: 'medium' }}</small>
+            </div>
+
+            <hr class="my-2">
+
+            <div class="d-flex justify-content-between">
+              <span class="fw-semibold">Totale:</span>
+              <span class="text-success fw-bold">
+                {{ purchase.totalPrice | currency: 'EUR' }}
+              </span>
+            </div>
+
+            <ul class="list-group list-group-flush mt-3">
+              <li class="list-group-item px-0 py-1" *ngFor="let prod of purchase.products">
+                {{ prod.name }} &times; {{ prod.quantity }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
