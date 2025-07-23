@@ -32,6 +32,8 @@ public class CartService {
     private PurchaseRepository purchaseRepository;
     @Autowired
     private SaleAlertRepository saleAlertRepository;
+    @Autowired
+    private ProductInSaleRepository productInSaleRepository;
 
 //    @Autowired
 //    private transazioneRepository transazioneRepository;
@@ -364,12 +366,17 @@ public class CartService {
 
             BigDecimal totalePerAcquisto = BigDecimal.ZERO;
 
-            // Fase 5: Creazione e salvataggio dei ProductInPurchase
+            // Fase 5: Creazione e salvataggio dei ProductInPurchase/ProductInSale
+            Map<User, List<ProductInSale>> venditePerVenditore = new HashMap<>();
             List<ProductInPurchase> acquisti = new ArrayList<>();
             for (Map.Entry<Product, Integer> entry : productQuantityMap.entrySet()) {
+
                 Product product = entry.getKey();
                 int quantity = entry.getValue();
+
+                // Creazione ProductInPurchase
                 totalePerAcquisto = totalePerAcquisto.add((BigDecimal.valueOf(quantity ).multiply(product.getPrice())));
+
                 // Aggiorna la quantità del prodotto
                 product.setQuantity(product.getQuantity() - quantity);
                 productRepository.save(product);
@@ -379,7 +386,25 @@ public class CartService {
                 pip.setQuantity(quantity);
                 pip.setRelatedPurchase(purchase);
                 acquisti.add(pip);
+
+                // Inserimento dati in mappa Seller-Avviso
+                User venditore = product.getShop().getSeller();
+
+                //Creazione prodotto da aggiungere
+                ProductInSale pis = new ProductInSale();
+                pis.setProduct(product);
+                pis.setQuantity(quantity);
+                pis.setPrice(product.getPrice());
+
+                //Se non è nella mappa lo aggiunge
+                if (!venditePerVenditore.containsKey(venditore)) {
+                    venditePerVenditore.put(venditore, new ArrayList<>());
+
+                }
+                venditePerVenditore.get(venditore).add(pis);
+
             }
+
 
             productInPurchaseRepository.saveAll(acquisti);
             entityManager.flush(); // Forza il flush per rilevare eventuali errori
@@ -389,27 +414,27 @@ public class CartService {
             purchase.setTotalPrice(totalePerAcquisto);
             purchaseRepository.save(purchase);
 
-            // Fase 7: Creazione notifiche venditori
-            Map<User, List<ProductInCart>> venditePerVenditore = new HashMap<>();
-            for (ProductInCart cp : userProducts) {
-                User venditore = cp.getProduct().getShop().getSeller();
-                venditePerVenditore.computeIfAbsent(venditore, k -> new ArrayList<>()).add(cp);
-            }
-
-            for (Map.Entry<User, List<ProductInCart>> entry : venditePerVenditore.entrySet()) {
+            for (Map.Entry<User, List<ProductInSale>> entry : venditePerVenditore.entrySet()) {
                 User venditore = entry.getKey();
-                List<ProductInCart> prodotti = entry.getValue();
+                List<ProductInSale> prodotti = entry.getValue();
 
                 BigDecimal totale = prodotti.stream()
                         .map(p -> p.getProduct().getPrice().multiply(BigDecimal.valueOf(p.getQuantity())))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                SaleAlert alert = new SaleAlert();
-                alert.setSeller(venditore);
-                alert.setPurchase(purchase);
-                alert.setShippingAddress(shippingAddress);
-                alert.setTotalAmount(totale.floatValue());
-                saleAlertRepository.save(alert);
+                SaleAlert sa = new SaleAlert();
+                sa.setSeller(venditore);
+                sa.setPurchase(purchase);
+                sa.setShippingAddress(shippingAddress);
+                sa.setTotalAmount(totale.floatValue());
+                sa.setProducts(prodotti);
+                saleAlertRepository.save(sa);
+
+                for (ProductInSale pis : prodotti) {
+                    pis.setSaleAlert(sa);
+                }
+                productInSaleRepository.saveAll(prodotti);
+
             }
 
             // Fase 8: Pulizia carrello
@@ -420,6 +445,82 @@ public class CartService {
             throw new InvalidOperationException("Errore durante l'acquisto: " + e.getMessage());
         }
     }
+
+
+
+
+
+
+
+
+
+//        try {
+//            // Fase 4: Creazione e salvataggio dell'acquisto
+//            Purchase purchase = new Purchase();
+//            purchase.setBuyer(user);
+//            purchase.setTime(LocalDateTime.now());
+//            purchase = purchaseRepository.save(purchase);
+//            entityManager.flush(); // Forza il flush per rilevare eventuali errori
+//
+//            BigDecimal totalePerAcquisto = BigDecimal.ZERO;
+//
+//            // Fase 5: Creazione e salvataggio dei ProductInPurchase
+//            List<ProductInPurchase> acquisti = new ArrayList<>();
+//            for (Map.Entry<Product, Integer> entry : productQuantityMap.entrySet()) {
+//                Product product = entry.getKey();
+//                int quantity = entry.getValue();
+//                totalePerAcquisto = totalePerAcquisto.add((BigDecimal.valueOf(quantity ).multiply(product.getPrice())));
+//                // Aggiorna la quantità del prodotto
+//                product.setQuantity(product.getQuantity() - quantity);
+//                productRepository.save(product);
+//
+//                ProductInPurchase pip = new ProductInPurchase();
+//                pip.setProduct(product);
+//                pip.setQuantity(quantity);
+//                pip.setRelatedPurchase(purchase);
+//                acquisti.add(pip);
+//            }
+//
+//
+//            productInPurchaseRepository.saveAll(acquisti);
+//            entityManager.flush(); // Forza il flush per rilevare eventuali errori
+//
+//            // Fase 6: Aggiornamento dell'acquisto con i prodotti
+//            purchase.setProductsInPurchase(acquisti);
+//            purchase.setTotalPrice(totalePerAcquisto);
+//            purchaseRepository.save(purchase);
+//
+//            // Fase 7: Creazione notifiche venditori
+//            Map<User, List<ProductInCart>> venditePerVenditore = new HashMap<>();
+//            for (ProductInCart cp : userProducts) {
+//                User venditore = cp.getProduct().getShop().getSeller();
+//                venditePerVenditore.computeIfAbsent(venditore, k -> new ArrayList<>()).add(cp);
+//            }
+//
+//            for (Map.Entry<User, List<ProductInCart>> entry : venditePerVenditore.entrySet()) {
+//                User venditore = entry.getKey();
+//                List<ProductInCart> prodotti = entry.getValue();
+//
+//                BigDecimal totale = prodotti.stream()
+//                        .map(p -> p.getProduct().getPrice().multiply(BigDecimal.valueOf(p.getQuantity())))
+//                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+//
+//                SaleAlert alert = new SaleAlert();
+//                alert.setSeller(venditore);
+//                alert.setPurchase(purchase);
+//                alert.setShippingAddress(shippingAddress);
+//                alert.setTotalAmount(totale.floatValue());
+//                saleAlertRepository.save(alert);
+//            }
+//
+//            // Fase 8: Pulizia carrello
+//            productInCartRepository.deleteAll(userProducts);
+//
+//        } catch (Exception e) {
+//            // Il rollback avverrà automaticamente grazie all'annotazione @Transactional
+//            throw new InvalidOperationException("Errore durante l'acquisto: " + e.getMessage());
+//        }
+//    }
 
 
 

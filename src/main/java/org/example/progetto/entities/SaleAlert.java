@@ -8,6 +8,8 @@ import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,4 +39,11 @@ public class SaleAlert {
 
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @Column(name = "viewed", nullable = false)
+    private boolean viewed;
+
+    @OneToMany(mappedBy = "saleAlert", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductInSale> products = new ArrayList<>();
+
 }

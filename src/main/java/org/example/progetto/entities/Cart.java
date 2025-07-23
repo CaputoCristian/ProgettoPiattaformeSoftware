@@ -37,7 +37,4 @@ public class Cart {
     @OneToMany(mappedBy = "cart", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ProductInCart> cartProducts = new ArrayList<>();
 
-
-
-
 }
