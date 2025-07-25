@@ -17,5 +17,4 @@ public interface SaleAlertRepository extends JpaRepository<SaleAlert, Integer> {
     List<SaleAlert> findBySeller_Email(String email);
     Page<SaleAlert> findBySeller_Email(String email, Pageable paging);
     Optional<SaleAlert> findById(Long id);
-    List<Purchase> findByBuyer(User user);
 }

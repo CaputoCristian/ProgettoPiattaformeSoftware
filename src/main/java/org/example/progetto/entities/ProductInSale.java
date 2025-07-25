@@ -21,6 +21,7 @@ public class ProductInSale {
     private int id;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "related_sale")
     private SaleAlert saleAlert;
 
     @ManyToOne(optional = false)

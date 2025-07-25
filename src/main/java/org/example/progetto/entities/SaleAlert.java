@@ -27,10 +27,6 @@ public class SaleAlert {
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
-    @ManyToOne
-    @JoinColumn(name = "related_purchase", nullable = false)
-    private Purchase purchase;
-
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
 
@@ -45,5 +41,7 @@ public class SaleAlert {
 
     @OneToMany(mappedBy = "saleAlert", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductInSale> products = new ArrayList<>();
+
+    public boolean getViewed() {return this.viewed;}
 
 }

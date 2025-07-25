@@ -84,26 +84,24 @@ CREATE TABLE product_in_cart (
 CREATE TABLE sale_alert (
     id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
     seller_id INTEGER NOT NULL,
-    related_purchase INTEGER NOT NULL,
     shipping_address VARCHAR(255) NOT NULL,
     total_amount NUMERIC(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (seller_id) REFERENCES app_user(id) ON DELETE CASCADE,
-    FOREIGN KEY (related_purchase) REFERENCES purchase(id) ON DELETE CASCADE
+    viewed boolean DEFAULT false,
+    FOREIGN KEY (seller_id) REFERENCES app_user(id) ON DELETE CASCADE
 
 );
 
 CREATE TABLE product_in_sale (
     id INTEGER AUTO_INCREMENT PRIMARY KEY NOT NULL,
-    sale_alert_id INTEGER NOT NULL,
+    related_sale INTEGER,
     product_id INTEGER NOT NULL,
     quantity INTEGER NOT NULL CHECK (quantity > 0),
     price_each DECIMAL(10, 2) NOT NULL CHECK (price_each >= 0),
-    viewed boolean DEFAULT false,
 
-    FOREIGN KEY (sale_alert_id) REFERENCES sale_alert(id) ON DELETE CASCADE,
-    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
-
-    CONSTRAINT unique_alert_product UNIQUE (sale_alert_id, product_id)
+    FOREIGN KEY (related_sale) REFERENCES sale_alert(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
 
 );
+#     CONSTRAINT unique_alert_product UNIQUE (related_sale, product_id)
+

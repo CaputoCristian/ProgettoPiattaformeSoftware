@@ -422,18 +422,24 @@ public class CartService {
                         .map(p -> p.getProduct().getPrice().multiply(BigDecimal.valueOf(p.getQuantity())))
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+                //Creazione vendita
                 SaleAlert sa = new SaleAlert();
                 sa.setSeller(venditore);
-                sa.setPurchase(purchase);
+//              sa.setPurchase(purchase);
                 sa.setShippingAddress(shippingAddress);
                 sa.setTotalAmount(totale.floatValue());
-                sa.setProducts(prodotti);
                 saleAlertRepository.save(sa);
 
+                //Creazione prodotti da aggiungerea alla vendita
                 for (ProductInSale pis : prodotti) {
                     pis.setSaleAlert(sa);
+                    productInSaleRepository.save(pis);
                 }
-                productInSaleRepository.saveAll(prodotti);
+
+                //Assegnamento valori, postumo per vincoli di relazione.
+
+                sa.setProducts(prodotti);
+                sa.setViewed(false);
 
             }
 

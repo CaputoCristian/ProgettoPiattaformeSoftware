@@ -50,24 +50,4 @@ export class PurchaseService {
     return this.httpClient.get<Product>(`${this.baseUrl}/purchases/${id}`, {headers});
   }
 
-  addProduct(prodotto: Product): Observable<any> {
-    const params = { prodotto: prodotto.toString()};
-    return this.httpClient.put(`${this.baseUrl}/add`, null, { headers: this.getHeaders(), params });
-  }
-
-  editProduct(prodotto: Product): Observable<any> {
-    const params = { prodotto: prodotto.toString()};
-    return this.httpClient.post(`${this.baseUrl}/${prodotto.id}`, null, { headers: this.getHeaders(), params });
-  }
-
-  searchProducts(query: string, minPrice?: number, maxPrice?: number, availableOnly?: boolean): Observable<Product[]> {
-    let params = new HttpParams().set('q', query);
-
-    if (minPrice != null) params = params.set('minPrice', minPrice.toString());
-    if (maxPrice != null) params = params.set('maxPrice', maxPrice.toString());
-    if (availableOnly) params = params.set('availableOnly', 'true');
-
-    return this.httpClient.get<Product[]>(`${this.baseUrl}/products/search`, { params });
-  }
-
 }

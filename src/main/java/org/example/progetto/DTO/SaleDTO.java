@@ -23,5 +23,7 @@ public class SaleDTO {
 
     private List<ProductInSaleDTO> products;
 
+    private String shippingAddress;
 
+    private boolean check;
 }

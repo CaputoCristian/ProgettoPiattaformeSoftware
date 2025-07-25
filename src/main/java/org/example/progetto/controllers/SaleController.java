@@ -33,6 +33,25 @@ public class SaleController {
     private SaleService saleService;
 
 
+    //TODO vedi cosa restituisce sto metodo.
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/{id}/check")
+    public ResponseEntity<Void> toggleCheck(@PathVariable Long id, Authentication authentication) {
+        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+
+        SaleAlert sale = saleService.showById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordine non trovato"));
+
+        if (!sale.getSeller().getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Non sei autorizzato a visualizzare questo ordine");
+        }
+        else {
+            saleService.toggleViewed(sale);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
 
     ///  Non necessario
 //    @PostMapping
@@ -55,7 +74,7 @@ public class SaleController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/getAll")
-    public ResponseEntity<List<SaleDTO>> getAllPurchases(Authentication authentication) {
+    public ResponseEntity<List<SaleDTO>> getAllSales(Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
         try {
             List<SaleDTO> vendite = saleService.getAllSalesForUser(email);
@@ -78,7 +97,7 @@ public class SaleController {
 //    }
 
     @GetMapping("/{id}")
-    public ResponseEntity getPurchase(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity getSale(@PathVariable Long id, Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
 
         SaleAlert sale = saleService.showById(id)

@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,6 +62,10 @@ public class SaleService {
         return result;
     }
 
+    public void toggleViewed(SaleAlert sale) {
+        sale.setViewed(!sale.getViewed());
+        saleRepository.save(sale);
+    }
 
 //    public List<Purchase> showAllSalesBetween(long userId, LocalDateTime startTime, LocalDateTime endTime, int pageNumber, int pageSize, String sortBy) {
 //        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
@@ -99,6 +104,8 @@ public class SaleService {
         dto.setDate(sale.getCreatedAt());
         dto.setTotalPrice(totale);
         dto.setProducts(prodottiDTO);
+        dto.setShippingAddress(sale.getShippingAddress());
+        dto.setCheck(sale.getViewed());
 
         return dto;
     }
