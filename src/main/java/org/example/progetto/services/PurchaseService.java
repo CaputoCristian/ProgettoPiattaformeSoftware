@@ -5,6 +5,7 @@ import org.example.progetto.DTO.PurchaseDTO;
 import org.example.progetto.entities.ProductInPurchase;
 import org.example.progetto.entities.Purchase;
 import org.example.progetto.entities.User;
+import org.example.progetto.exceptions.UserNotFoundException;
 import org.example.progetto.repositories.ProductInPurchaseRepository;
 import org.example.progetto.repositories.PurchaseRepository;
 import org.example.progetto.repositories.UserRepository;

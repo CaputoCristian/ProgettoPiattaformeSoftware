@@ -1,13 +1,10 @@
 package org.example.progetto.controllers;
 
 
-import org.example.progetto.DTO.PurchaseDTO;
 import org.example.progetto.DTO.SaleDTO;
-import org.example.progetto.entities.Purchase;
 import org.example.progetto.entities.SaleAlert;
-import org.example.progetto.services.PurchaseService;
 import org.example.progetto.services.SaleService;
-import org.example.progetto.services.UserNotFoundException;
+import org.example.progetto.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +14,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController

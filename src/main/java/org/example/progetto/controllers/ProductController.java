@@ -97,7 +97,6 @@ public class ProductController {
 //        return ResponseEntity.ok(results);
 //    }
 
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(
             @RequestParam("q") String query,

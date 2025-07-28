@@ -1,15 +1,10 @@
 package org.example.progetto.controllers;
 
-import org.example.progetto.DTO.ProductUpdateRequest;
 import org.example.progetto.DTO.PurchaseDTO;
-import org.example.progetto.entities.Product;
 import org.example.progetto.entities.Purchase;
-import org.example.progetto.exceptions.BarcodeAlreadyExistException;
-import org.example.progetto.services.ProductService;
 import org.example.progetto.services.PurchaseService;
-import org.example.progetto.services.UserNotFoundException;
+import org.example.progetto.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,10 +13,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(

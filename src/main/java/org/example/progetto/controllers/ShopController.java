@@ -1,22 +1,13 @@
 package org.example.progetto.controllers;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.example.progetto.entities.Product;
-import org.example.progetto.entities.Purchase;
 import org.example.progetto.entities.Shop;
-import org.example.progetto.entities.User;
-import org.example.progetto.exceptions.BarcodeAlreadyExistException;
 //import org.example.progetto.exceptions.UserAlreadyHasShopException;
 import org.example.progetto.exceptions.ShopNotFoundException;
 import org.example.progetto.services.ShopService;
-import org.example.progetto.services.UserNotFoundException;
+import org.example.progetto.exceptions.UserNotFoundException;
 import org.example.progetto.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;

@@ -4,6 +4,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.LockModeType;
 import org.example.progetto.DTO.ProductInCartDTO;
 import org.example.progetto.entities.*;
+import org.example.progetto.exceptions.InvalidOperationException;
+import org.example.progetto.exceptions.InvalidQuantityException;
+import org.example.progetto.exceptions.ProductNotFoundException;
+import org.example.progetto.exceptions.UserNotFoundException;
 import org.example.progetto.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 

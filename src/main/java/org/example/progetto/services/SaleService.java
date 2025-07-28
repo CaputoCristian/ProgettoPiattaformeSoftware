@@ -1,22 +1,19 @@
 package org.example.progetto.services;
 
 import org.example.progetto.DTO.ProductInSaleDTO;
-import org.example.progetto.DTO.ProductPurchasedDTO;
-import org.example.progetto.DTO.PurchaseDTO;
 import org.example.progetto.DTO.SaleDTO;
 import org.example.progetto.entities.*;
+import org.example.progetto.exceptions.UserNotFoundException;
 import org.example.progetto.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
