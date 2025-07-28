@@ -110,4 +110,12 @@ public class SaleService {
         return dto;
     }
 
+    public Boolean hasNotifications(String email) throws UserNotFoundException {
+        User user = userRepository.findByEmail(email);
+        if (user == null) throw new UserNotFoundException("Utente non trovato");
+
+        return saleRepository.existsBySellerAndViewedFalse(user);
+        }
+
+
 }

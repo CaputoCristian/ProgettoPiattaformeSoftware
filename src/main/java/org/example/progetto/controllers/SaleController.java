@@ -122,5 +122,15 @@ public class SaleController {
 //    }
 
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/hasNotifications")
+    public ResponseEntity<Boolean> hasNotifications(Authentication authentication) {
+        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+        try {
+            return ResponseEntity.ok(saleService.hasNotifications(email));
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
 }

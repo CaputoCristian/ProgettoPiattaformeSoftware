@@ -9,6 +9,7 @@ import {CartService} from './services/cart.service';
 import {HomepageComponent} from './homepage/homepage.component';
 import {SearchService} from './services/search.service';
 import {FormsModule} from '@angular/forms';
+import {SaleService} from './services/sale.service';
 
 @Component({
   selector: 'app-root',
@@ -18,13 +19,14 @@ import {FormsModule} from '@angular/forms';
 })
 export class AppComponent implements OnInit {
   title: string = '';
-  isOwner: boolean = false;
+  hasNotifications: boolean = false;
 
   constructor(
     private oauthService: OAuthService,
     private httpClient: HttpClient,
     private router: Router,
-    protected searchService: SearchService
+    protected searchService: SearchService,
+    protected saleService: SaleService
   ) { }
 
 
@@ -39,8 +41,8 @@ export class AppComponent implements OnInit {
     if (this.oauthService.hasValidAccessToken()) {
       console.log('Token già presente, facendo partire la chiamata...');
       this.userInit();
-
     }
+
   }
 
   userInit() {
@@ -52,6 +54,7 @@ export class AppComponent implements OnInit {
     }).subscribe(response => {
       console.log(response);
     });
+    this.checkNotifications();
   }
 
   isLoggedIn(): boolean {
@@ -66,5 +69,19 @@ export class AppComponent implements OnInit {
   onSearch(): void {
     this.searchService.search();
   }
+
+  checkNotifications(): void {
+    this.saleService.checkNotifications().subscribe({
+      next: (result: boolean) => {
+        if (result) {
+          alert('Hai delle vendite nuove e/o non completate!');
+        }      },
+      error: (err) => {
+        console.log('Errore durante il controllo notifiche', err);
+        this.hasNotifications = false;
+      }
+    });
+  }
+
 
 }

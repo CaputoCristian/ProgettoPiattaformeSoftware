@@ -73,4 +73,11 @@ export class SaleService {
 
   }
 
+  checkNotifications(): Observable<boolean> {
+  const token = this.oauthService.getAccessToken();
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`
+  });
+  return this.httpClient.get<boolean>(`${this.baseUrl}/sales/hasNotifications`, {headers});}
+
 }
