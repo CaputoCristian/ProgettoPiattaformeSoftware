@@ -46,7 +46,6 @@ public class CartController {
 
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
 
-
         try {
             cartService.addToCart(email, idProdotto);
 

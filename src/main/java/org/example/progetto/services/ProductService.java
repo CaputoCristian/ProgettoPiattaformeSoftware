@@ -5,8 +5,11 @@ package org.example.progetto.services;
 import org.example.progetto.DTO.ProductUpdateRequest;
 import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.Product;
+import org.example.progetto.entities.Shop;
 import org.example.progetto.entities.User;
 import org.example.progetto.repositories.ProductRepository;
+import org.example.progetto.repositories.ShopRepository;
+import org.example.progetto.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("productService")
@@ -28,6 +28,10 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private ShopRepository shopRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public List<Product> showAllProducts() {
@@ -35,7 +39,28 @@ public class ProductService {
     }
 
     @Transactional(readOnly = false)
-    public Product addProduct(Product product) {
+    public Product addProduct(String email, ProductUpdateRequest request) {
+
+        Optional<Shop> shop = shopRepository.findBySellerEmail(email);
+
+        Product product = new Product();
+
+        product.setName(request.getName ());
+        product.setBrand(request.getBrand());
+        product.setDescription(request.getDescription());
+        product.setPrice(BigDecimal.valueOf(request.getPrice()));
+        product.setQuantity(request.getQuantity());
+
+        if (!shop.isPresent()) {
+
+            Shop newShop = new Shop();
+            newShop.setSeller(userRepository.findByEmail(email));
+            shopRepository.save(newShop);
+            product.setShop(newShop);
+        }else{
+            product.setShop(shop.get());
+        }
+
         productRepository.save(product);
         return product;
     }
@@ -77,7 +102,6 @@ public class ProductService {
         product.setDescription(updateRequest.getDescription());
         product.setPrice(BigDecimal.valueOf(updateRequest.getPrice()));
         product.setQuantity(updateRequest.getQuantity());
-        product.setType(updateRequest.getType());
 
         return productRepository.save(product);
     }

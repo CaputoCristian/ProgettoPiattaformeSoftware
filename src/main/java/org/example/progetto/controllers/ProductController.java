@@ -1,5 +1,6 @@
 package org.example.progetto.controllers;
 
+import jakarta.validation.Valid;
 import org.example.progetto.DTO.ProductUpdateRequest;
 import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.Product;
@@ -15,9 +16,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(
         origins = "http://localhost:4200",
@@ -45,15 +48,13 @@ public class ProductController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct(@RequestBody Product product, Authentication authentication) {
+    public ResponseEntity<?> addProduct( @RequestBody ProductUpdateRequest request, Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
 
         try {
-            Shop shop = shopService.getShopByUserEmail(email);
-
-            product.setShop(shop);
-
-            Product addedProduct = productService.addProduct(product);
+//            Shop shop = shopService.getShopByUserEmail(email);
+//            System.out.println("Shop trovato");
+            Product addedProduct = productService.addProduct(email, request);
 
             return ResponseEntity.ok(addedProduct);
         } catch (ShopNotFoundException e) {
@@ -80,8 +81,7 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id,
-                                              @RequestBody ProductUpdateRequest request) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest request) {
         Product updatedProduct = productService.updateProduct(id, request);
         return ResponseEntity.ok(updatedProduct);
     }
@@ -108,4 +108,11 @@ public class ProductController {
         return ResponseEntity.ok(results);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
 }

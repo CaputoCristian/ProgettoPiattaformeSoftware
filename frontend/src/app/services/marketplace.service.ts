@@ -47,7 +47,6 @@ export class MarketplaceService {
     return this.httpClient.post<Product>('http://localhost:8081/products/addProduct', product, { headers });
   }
 
-
   deleteProduct(productId: Number): Observable<any> {
     const params = { prodotto: productId.toString()};
     return this.httpClient.delete(`${this.baseUrl}/shop/delete`, { headers: this.getHeaders(), params });

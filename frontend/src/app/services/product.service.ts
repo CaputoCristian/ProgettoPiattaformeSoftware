@@ -39,9 +39,17 @@ export class ProductService {
     return this.httpClient.get<Product>(`${this.baseUrl}/${id}`, {headers});
   }
 
-  addProduct(prodotto: Product): Observable<any> {
-    const params = { prodotto: prodotto.toString()};
-    return this.httpClient.put(`${this.baseUrl}/add`, null, { headers: this.getHeaders(), params });
+  addProduct(product: Product): Observable<Product> {
+    const token = this.oauthService.getAccessToken();
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.httpClient.post<Product>('http://localhost:8081/products/addProduct', product, { headers });
+  }
+
+  deleteProduct(productId: Number): Observable<any> {
+    const params = { prodotto: productId.toString()};
+    return this.httpClient.delete(`${this.baseUrl}/shop/delete`, { headers: this.getHeaders(), params });
   }
 
   editProduct(prodotto: Product): Observable<any> {

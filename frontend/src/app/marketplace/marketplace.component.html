@@ -11,47 +11,68 @@
   </div>
 
   <!-- Bottone per aggiungere un nuovo prodotto -->
-  <button (click)="addProduct()">➕ Aggiungi nuovo prodotto</button>
+  <button class="btn btn-primary mt-3 w-50" (click)="addProduct()">➕ Aggiungi nuovo prodotto</button>
 
   <hr>
 
   <!-- Form per aggiunta o modifica -->
-  <div *ngIf="selectedProduct">
+  <form *ngIf="selectedProduct" #productForm="ngForm" (ngSubmit)="saveProduct()" novalidate>
+
     <h3>{{ isEditMode ? 'Modifica Prodotto' : 'Nuovo Prodotto' }}</h3>
 
     <label>
       Nome:
-      <input type="text" [(ngModel)]="selectedProduct.name">
+      <input type="text" [(ngModel)]="selectedProduct.name" name="name" #name="ngModel"
+             required maxlength="30">
+      <div *ngIf="name.invalid && name.touched" style="color:red">
+        Campo obbligatorio, massimo 30 caratteri.
+      </div>
     </label>
     <br>
 
     <label>
       Descrizione:
-      <input type="text" [(ngModel)]="selectedProduct.description">
+      <input type="text" [(ngModel)]="selectedProduct.description" name="description" #description="ngModel"
+             maxlength="100">
     </label>
+    <div *ngIf="description.invalid && description.touched" style="color:red">
+      Lunghezza massima 100 caratteri.
+    </div>
     <br>
 
     <label>
       Prezzo (€):
-      <input type="number" step="0.01" [(ngModel)]="selectedProduct.price">
+      <input type="number" step="0.01" [(ngModel)]="selectedProduct.price" name="price" #price="ngModel"
+             required min="0" step="0.01">
     </label>
+    <div *ngIf="price.invalid && price.touched" style="color:red">
+      Prezzo non valido (solo numeri ≥ 0).
+    </div>
     <br>
 
     <label>
       Quantità:
-      <input type="number" step="0.01" [(ngModel)]="selectedProduct.quantity">
+      <input type="number" step="0.01" [(ngModel)]="selectedProduct.quantity" name="quantity" #quantity="ngModel"
+             required min="0" step="1">
     </label>
+    <div *ngIf="quantity.invalid && quantity.touched" style="color:red">
+      Quantità non valida (solo numeri interi ≥ 0).
+    </div>
     <br>
 
     <label>
       Marca:
-      <input type="text" step="0.01" [(ngModel)]="selectedProduct.brand">
+      <input type="text" step="0.01" [(ngModel)]="selectedProduct.brand" name="brand" #brand="ngModel"
+             required maxlength="15">
     </label>
+    <div *ngIf="brand.invalid && brand.touched" style="color:red">
+      Campo obbligatorio, massimo 15 caratteri.
+    </div>
     <br>
 
-    <button (click)="saveProduct()">💾 Salva</button>
-    <button (click)="cancelEdit()">❌ Annulla</button>
-  </div>
+    <button class="btn btn-primary btn-sm" [disabled]="productForm.invalid">💾 Salva</button>
+    <button class="btn btn-danger btn-sm" (click)="cancelEdit()">❌ Annulla</button>
+  </form>
 
   <hr>
 
@@ -61,11 +82,13 @@
     <!-- Prodotto in modalità visualizzazione -->
     <div *ngIf="!selectedProduct || selectedProduct.id !== prodotto.id">
       <h4>{{ prodotto.name }}</h4>
-      <p>{{ prodotto.description }}</p>
+      <p>Marca: {{ prodotto.brand }}</p>
+      <p>Descrizione: {{ prodotto.description }}</p>
+      <p>In magazzino: {{ prodotto.quantity }}</p>
       <p>Prezzo: {{ prodotto.price }}€</p>
 
-      <button (click)="editProduct(prodotto)">✏️ Modifica</button>
-      <button (click)="deleteProduct(prodotto.id)">🗑️ Elimina</button>
+      <button class="btn btn-primary btn-sm" (click)="editProduct(prodotto)">✏️ Modifica</button>
+      <button class="btn btn-danger btn-sm" (click)="deleteProduct(prodotto.id)">🗑️ Elimina</button>
     </div>
 
   </div>

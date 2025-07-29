@@ -51,7 +51,7 @@ export class MarketplaceComponent implements OnInit{
   }
 
   loadProducts(): void {
-    this.MarketplaceService.getAllProducts().subscribe({
+    this.ProductService.getAllProducts().subscribe({
       next: (response: any) => {
         this.isLoading = false;
 
@@ -60,7 +60,7 @@ export class MarketplaceComponent implements OnInit{
           this.quantities = this.prodotti.map(() => 1);
 
           if (this.prodotti.length === 0) {
-            this.errorMessage = 'Non ci sono prodotti disponibili in questo shop.';
+            this.errorMessage = 'Non ci sono prodotti disponibili in questo negozio.';
           } else {
             this.errorMessage = '';
           }
@@ -102,15 +102,15 @@ export class MarketplaceComponent implements OnInit{
     this.isEditMode = true;
   }
 
-  saveProduct(): void {
+  AsaveProduct(): void {
     if (this.selectedProduct) {
       if (this.isEditMode) {
-        this.MarketplaceService.editProduct(this.selectedProduct).subscribe({
+        this.ProductService.editProduct(this.selectedProduct).subscribe({
           next: () => this.loadProducts(),
           error: err => console.error('Errore aggiornamento prodotto:', err)
         });
       } else {
-        this.MarketplaceService.addProduct(this.selectedProduct).subscribe({
+        this.ProductService.addProduct(this.selectedProduct).subscribe({
           next: () => this.loadProducts(),
           error: err => console.error('Errore aggiunta prodotto:', err)
         });
@@ -119,9 +119,40 @@ export class MarketplaceComponent implements OnInit{
     }
   }
 
+  saveProduct(): void {
+    if (!this.selectedProduct) return;
+
+    if (!this.selectedProduct.name || this.selectedProduct.name.length > 30 ||
+      this.selectedProduct.description.length > 100 ||
+      this.selectedProduct.price == null || this.selectedProduct.price < 0 ||
+      this.selectedProduct.quantity == null || !Number.isInteger(this.selectedProduct.quantity) || this.selectedProduct.quantity < 0 ||
+      !this.selectedProduct.brand || this.selectedProduct.brand.length > 15) {
+      alert('Verifica i dati inseriti. Alcuni campi non sono validi.');
+      return;
+    }
+
+    const action = this.isEditMode
+      ? this.ProductService.editProduct(this.selectedProduct)
+      : this.ProductService.addProduct(this.selectedProduct);
+
+    action.subscribe({
+      next: () => this.loadProducts(),
+      error: err => {
+        if (err.status === 400 && err.error) {
+          alert('Errore di validazione:\n' + JSON.stringify(err.error, null, 2));
+        } else {
+          console.error('Errore aggiunta prodotto:', err);
+        }
+      }
+    });
+
+    this.selectedProduct = null;
+  }
+
+
   deleteProduct(productId: number): void {
     if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
-      this.MarketplaceService.deleteProduct(productId).subscribe({
+      this.ProductService.deleteProduct(productId).subscribe({
         next: () => this.loadProducts(),
         error: err => console.error('Errore eliminazione prodotto:', err)
       });
