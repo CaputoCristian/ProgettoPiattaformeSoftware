@@ -29,11 +29,30 @@ export class UserService {
   }
 
   getUser(): Observable<UserProfileDTO> {
-    return this.httpClient.get<UserProfileDTO>(`${this.baseUrl}/user/profile`, { headers: this.getHeaders() });
+    const token = this.oauthService.getAccessToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.httpClient.get<UserProfileDTO>(`${this.baseUrl}/user/profile`, { headers });
   }
 
   updateUser(user: UserProfileDTO): Observable<UserProfileDTO> {
-    return this.httpClient.put<UserProfileDTO>(`${this.baseUrl}/user/update`, user, { headers: this.getHeaders() });
+    const token = this.oauthService.getAccessToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.httpClient.put<UserProfileDTO>(`${this.baseUrl}/user/update`, user, { headers });
+  }
+
+  getUserAddress(): Observable<string> {
+    const token = this.oauthService.getAccessToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.httpClient.get<string>(`${this.baseUrl}/user/address`, { headers });
   }
 
 }

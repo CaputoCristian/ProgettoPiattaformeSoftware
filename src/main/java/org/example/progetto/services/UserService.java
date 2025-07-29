@@ -17,8 +17,11 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    //@Autowired
     //private ShopRepository shopRepository;
-    @Transactional(readOnly = true)     // Non dare accesso all'utente?
+
+    @Transactional(readOnly = true)
     public List<User> showAllUsers() {
         return userRepository.findAll();
     }
@@ -36,12 +39,12 @@ public class UserService {
         return user;
     }
 
-    @Transactional(readOnly = true)     // Non dare accesso all'utente?
+    @Transactional(readOnly = true)
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public User updateUserProfile(Integer userId, UserUpdateRequest updateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utente non trovato"));

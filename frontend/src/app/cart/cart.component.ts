@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {OAuthEvent, OAuthService} from 'angular-oauth2-oidc';
 import {catchError, debounceTime, distinctUntilChanged, filter, of, Subject, takeUntil} from 'rxjs';
+import {UserService} from '../services/user.service';
 
 @Component({
   selector: 'app-cart',
@@ -20,7 +21,7 @@ export class CartComponent implements OnInit, OnDestroy {
   totalAmount: number = 0;
 
   // Variabili per l'ordine
-  metodoPagamento: number = 1; // Ho messo giusto un valore di default cosi
+  metodoPagamento: number = 1; // Valore di default
   indirizzoSpedizione: string = '';
   private refreshInterval: any;
 
@@ -28,6 +29,7 @@ export class CartComponent implements OnInit, OnDestroy {
 
   constructor(
     private cartService: CartService,
+    private userService: UserService,
     private oauthService: OAuthService,
     private changeDetector: ChangeDetectorRef
 
@@ -36,6 +38,7 @@ export class CartComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Caricamento iniziale degli elementi del carrello
     this.loadCartItems();
+    this.getShippingAddress();
 
     // Sottoscrizione agli aggiornamenti del carrello
     this.cartService.cartUpdated$
@@ -184,4 +187,17 @@ export class CartComponent implements OnInit, OnDestroy {
       }
     );
   }
+
+  getShippingAddress(): void {
+    this.userService.getUserAddress().subscribe({
+      next: (address) => {
+        // Filtra i prodotti con quantità > 0
+        this.indirizzoSpedizione = address
+      },
+      error: (error) => {
+        console.error('Errore nel caricamento dell inidrizzo:', error);
+      },
+    });
+  }
+
 }

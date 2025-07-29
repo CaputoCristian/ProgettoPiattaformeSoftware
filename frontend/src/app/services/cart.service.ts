@@ -35,9 +35,8 @@ export class CartService {
   }
 
   getCartItems(): Observable<CarrelloProdottoDTO[]> {
-    return this.httpClient.get<CarrelloProdottoDTO[]>(
-      `${this.baseUrl}/items`,
-      { headers: this.getHeaders() }
+
+    return this.httpClient.get<CarrelloProdottoDTO[]>(`${this.baseUrl}/items`, { headers: this.getHeaders() }
     ).pipe(
       catchError(error => {
         console.error('Errore nel recupero degli elementi del carrello:', error);

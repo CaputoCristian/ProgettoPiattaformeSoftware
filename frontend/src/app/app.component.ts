@@ -13,7 +13,7 @@ import {SaleService} from './services/sale.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CartComponent, HomepageComponent, HttpClientModule, NgIf, FormsModule],
+  imports: [RouterOutlet, RouterLink, CartComponent, HttpClientModule, NgIf, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -25,6 +25,7 @@ public class Shop {
 
     @OneToOne
     @JoinColumn(name = "seller_id", unique = true, nullable = false)
+    @JsonManagedReference //evitare errori nell'aggiunta di un prodotto - loop infinito
     private User seller;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)

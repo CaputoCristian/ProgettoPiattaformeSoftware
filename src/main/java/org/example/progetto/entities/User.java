@@ -1,5 +1,6 @@
 package org.example.progetto.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
@@ -58,6 +59,7 @@ public class User {
     private List<Purchase> purchases;
 
     @OneToOne(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonBackReference //evitare errori nell'aggiunta di un prodotto - loop infinito
     private Shop shop;
 
 }
