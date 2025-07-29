@@ -24,7 +24,7 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/cart/**").authenticated()
-                                .requestMatchers("/products/**").authenticated()
+//                                .requestMatchers("/products/**").authenticated()
                                 .requestMatchers("/purchases/**").authenticated()
                                 .requestMatchers("/sales/**").authenticated()
                                 .anyRequest().permitAll()

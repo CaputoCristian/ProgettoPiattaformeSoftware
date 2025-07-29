@@ -38,7 +38,6 @@ export class CartComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Caricamento iniziale degli elementi del carrello
     this.loadCartItems();
-    this.getShippingAddress();
 
     // Sottoscrizione agli aggiornamenti del carrello
     this.cartService.cartUpdated$
