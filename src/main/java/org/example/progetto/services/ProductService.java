@@ -7,6 +7,10 @@ import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.Product;
 import org.example.progetto.entities.Shop;
 import org.example.progetto.entities.User;
+import org.example.progetto.exceptions.InvalidOperationException;
+import org.example.progetto.exceptions.ProductNotFoundException;
+import org.example.progetto.exceptions.ShopNotFoundException;
+import org.example.progetto.exceptions.UserNotFoundException;
 import org.example.progetto.repositories.ProductRepository;
 import org.example.progetto.repositories.ShopRepository;
 import org.example.progetto.repositories.UserRepository;
@@ -93,11 +97,17 @@ public class ProductService {
     }
 
     @Transactional(readOnly = false)
-    public Product updateProduct(Long productId, ProductUpdateRequest updateRequest) {
+    public Product updateProduct(String email, Long productId, ProductUpdateRequest updateRequest) throws UserNotFoundException, InvalidOperationException {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Prodotto non trovato"));
 
-        product.setName(updateRequest.getName ());
+        Optional<Shop> shop = shopRepository.findBySellerEmail(email);
+
+        if (shop.isPresent() && !shop.get().equals(product.getShop())) {
+            throw new InvalidOperationException("Non si ha accesso a questo prodotto");
+        }
+
+        product.setName(updateRequest.getName());
         product.setBrand(updateRequest.getBrand());
         product.setDescription(updateRequest.getDescription());
         product.setPrice(BigDecimal.valueOf(updateRequest.getPrice()));
@@ -127,7 +137,20 @@ public class ProductService {
 //                .collect(Collectors.toList());
 //    }
 
+    @Transactional
+    public void deleteProduct(String email, Long productId) throws InvalidOperationException, ProductNotFoundException {
 
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Prodotto non trovato"));
+
+        Optional<Shop> shop = shopRepository.findBySellerEmail(email);
+
+        if (shop.isPresent() && !shop.get().equals(product.getShop())) {
+            throw new InvalidOperationException("Non si ha accesso a questo prodotto");
+        }
+
+        productRepository.delete(product);
+    }
 
     public List<Product> searchProducts(String query, Float minPrice, Float maxPrice, boolean availableOnly) {
         return productRepository.search(query.toLowerCase(), minPrice, maxPrice, availableOnly);

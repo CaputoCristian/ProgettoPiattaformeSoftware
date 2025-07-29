@@ -6,8 +6,7 @@ import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.Product;
 import org.example.progetto.entities.Shop;
 import org.example.progetto.entities.User;
-import org.example.progetto.exceptions.BarcodeAlreadyExistException;
-import org.example.progetto.exceptions.ShopNotFoundException;
+import org.example.progetto.exceptions.*;
 import org.example.progetto.services.ProductService;
 import org.example.progetto.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +47,7 @@ public class ProductController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/addProduct")
-    public ResponseEntity<?> addProduct( @RequestBody ProductUpdateRequest request, Authentication authentication) {
+    public ResponseEntity<?> addProduct(@Valid @RequestBody ProductUpdateRequest request, Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
 
         try {
@@ -80,22 +79,43 @@ public class ProductController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest request) {
-        Product updatedProduct = productService.updateProduct(id, request);
-        return ResponseEntity.ok(updatedProduct);
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductUpdateRequest request, Authentication authentication) {
+        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+        try {
+            Product updatedProduct = productService.updateProduct(email, id, request);
+
+
+            return ResponseEntity.ok(updatedProduct);
+
+        } catch (ShopNotFoundException e) {
+            return new ResponseEntity<>("Shop non trovato per l'utente", HttpStatus.BAD_REQUEST);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>("Utente inesistente", HttpStatus.BAD_REQUEST);
+        } catch (InvalidOperationException e) {
+            return new ResponseEntity<>("Accesso non consentito", HttpStatus.UNAUTHORIZED);
+
+        }
+
     }
 
-//    @GetMapping("/search")
-//    public ResponseEntity<List<Product>> searchProducts(
-//            @RequestParam("q") String query,
-//            @RequestParam(value = "minPrice", required = false) Float minPrice,
-//            @RequestParam(value = "maxPrice", required = false) Float maxPrice,
-//            @RequestParam(value = "availableOnly", defaultValue = "false") boolean availableOnly
-//    ) {
-//        List<Product> results = productService.advancedSearch(query, minPrice, maxPrice, availableOnly);
-//        return ResponseEntity.ok(results);
-//    }
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id, Authentication authentication) {
+        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+
+        try {
+            productService.deleteProduct(email, id);
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (ShopNotFoundException e) {
+            return ResponseEntity.badRequest().body("Shop non trovato per l'utente");
+        } catch (InvalidOperationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Accesso non consentito");
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Prodotto non trovato");
+        }
+    }
 
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(

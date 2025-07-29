@@ -102,23 +102,6 @@ export class MarketplaceComponent implements OnInit{
     this.isEditMode = true;
   }
 
-  AsaveProduct(): void {
-    if (this.selectedProduct) {
-      if (this.isEditMode) {
-        this.ProductService.editProduct(this.selectedProduct).subscribe({
-          next: () => this.loadProducts(),
-          error: err => console.error('Errore aggiornamento prodotto:', err)
-        });
-      } else {
-        this.ProductService.addProduct(this.selectedProduct).subscribe({
-          next: () => this.loadProducts(),
-          error: err => console.error('Errore aggiunta prodotto:', err)
-        });
-      }
-      this.selectedProduct = null;
-    }
-  }
-
   saveProduct(): void {
     if (!this.selectedProduct) return;
 
@@ -161,6 +144,7 @@ export class MarketplaceComponent implements OnInit{
 
   cancelEdit(): void {
     this.selectedProduct = null;
+    this.isEditMode = false;
   }
 
 
