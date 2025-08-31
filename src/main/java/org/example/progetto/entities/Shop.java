@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(exclude = "seller") // evita loop con user.shop
-@ToString
+@ToString(exclude = "products")
 @Entity
 @Table(name = "shop", schema = "orders")
 

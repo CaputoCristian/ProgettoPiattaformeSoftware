@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ToString
+@ToString(exclude = "shop")
 @Entity
 @Table(name = "product", schema = "orders")
 

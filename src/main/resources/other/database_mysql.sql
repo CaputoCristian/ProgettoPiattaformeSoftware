@@ -1,5 +1,5 @@
-DROP SCHEMA orders;
-CREATE SCHEMA orders;
+/* DROP SCHEMA orders; */
+/* CREATE SCHEMA orders; */
 USE orders;
 
 CREATE TABLE app_user (

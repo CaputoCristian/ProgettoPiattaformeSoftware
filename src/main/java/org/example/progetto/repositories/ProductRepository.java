@@ -29,9 +29,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("""
         SELECT p FROM Product p
         WHERE 
-            LOWER(p.name) LIKE %:query% OR
-            LOWER(p.brand) LIKE %:query% OR
-            LOWER(p.description) LIKE %:query%
+            (LOWER(p.name) LIKE %:query% 
+             OR LOWER(p.brand) LIKE %:query% 
+             OR LOWER(p.description) LIKE %:query%)
         AND (:minPrice IS NULL OR p.price >= :minPrice)
         AND (:maxPrice IS NULL OR p.price <= :maxPrice)
         AND (:availableOnly = false OR p.quantity > 0)
@@ -40,4 +40,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
                          @Param("minPrice") Float minPrice,
                          @Param("maxPrice") Float maxPrice,
                          @Param("availableOnly") boolean availableOnly);
+
 }

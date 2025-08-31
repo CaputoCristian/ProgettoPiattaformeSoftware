@@ -152,8 +152,14 @@ public class ProductService {
         productRepository.delete(product);
     }
 
-    public List<Product> searchProducts(String query, Float minPrice, Float maxPrice, boolean availableOnly) {
+    public List<Product> searchProducts(String query, Float minPrice, Float maxPrice, boolean availableOnly) throws IllegalArgumentException {
+
+        if ((minPrice != null && minPrice < 0) ||
+            (maxPrice != null && maxPrice < 0) ||
+            (minPrice != null && maxPrice != null && minPrice > maxPrice)) {
+            throw new IllegalArgumentException(); }
         return productRepository.search(query.toLowerCase(), minPrice, maxPrice, availableOnly);
+
     }
 
 

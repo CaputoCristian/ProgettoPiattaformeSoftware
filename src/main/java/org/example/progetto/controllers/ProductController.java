@@ -118,14 +118,23 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Product>> searchProducts(
+    public ResponseEntity<?> searchProducts(
             @RequestParam("q") String query,
             @RequestParam(name = "minPrice", required = false) Float minPrice,
             @RequestParam(name = "maxPrice", required = false) Float maxPrice,
-            @RequestParam(name = "availableOnly", required = false) Boolean availableOnly) {
+            @RequestParam(name = "availableOnly", required = false, defaultValue = "false") Boolean availableOnly) {
 
-        List<Product> results = productService.searchProducts(query, minPrice, maxPrice, availableOnly != null && availableOnly);
-        return ResponseEntity.ok(results);
+        System.out.println("Ricevuta richiesta con: " + query + " " + minPrice + " " + maxPrice + " " + availableOnly);
+
+        try {
+            List<Product> results = productService.searchProducts(query, minPrice, maxPrice, availableOnly);
+
+            System.out.println("Invio risultati: " + results.toString());
+
+            return ResponseEntity.ok(results);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Parametri non validi");
+        }
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
