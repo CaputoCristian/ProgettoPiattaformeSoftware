@@ -6,13 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.List;
-
-//TODO Check nullable?
 
 @Getter
 @Setter
@@ -24,10 +21,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
-
-//    @Basic
-//    @Column(name = "cf", nullable = true, length = 16)
-//    private String cf;
 
     @Basic
     @Column(name = "first_name", nullable = false, length = 50)

@@ -31,16 +31,6 @@ public class ShopController {
     @Autowired
     private UserService userService;
 
-//    @PostMapping
-//    public ResponseEntity Create(@RequestBody Shop shop) {
-//        try {
-//            Shop createdShop = shopService.addShop(shop);
-//            return ResponseEntity.ok(createdShop);
-//        } catch (UserAlreadyHasShopException e) {
-//            return new ResponseEntity<>("This user already has a shop", HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("allProducts")
     public ResponseEntity<?> getProductListFromUser(Authentication authentication) throws UserNotFoundException {
@@ -60,20 +50,7 @@ public class ShopController {
             shopService.addShop(shop);
         }
 
-
-//        if (shop == null) {
-//            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Shop not found for this user.");
-//          shop.setSeller(userService.findByEmail(email));
-//          shop.setProducts(new ArrayList<Product>());
-//
-//          shopService.addShop(shop);
-//        }
-
         List<Product> products = shopService.getProductFromShop(shop.getId());
-//
-//        if (products.isEmpty()) {
-//            return ResponseEntity.ok("No products available in this shop.");
-//        }
 
         return ResponseEntity.ok(products);
 

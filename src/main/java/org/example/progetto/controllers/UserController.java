@@ -4,10 +4,8 @@ package org.example.progetto.controllers;
 import jakarta.validation.Valid;
 import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.User;
-import org.example.progetto.exceptions.EmailAlreadyExistException;
 import org.example.progetto.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -28,22 +26,6 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
-
-//    @PostMapping("/test")
-//    public ResponseEntity addUser(@RequestBody User user) {
-//        try {
-//            User addedUser = userService.addUser(user); //Non serve tornare l'utente se si ha il .ok (lazy method)
-//            return ResponseEntity.ok(addedUser);
-//        } catch (EmailAlreadyExistException e) {
-//            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-//        }
-//
-//    }
-//
-//    @GetMapping("/test")
-//    public List<User> showAllUsers () {
-//        return userService.showAllUsers();
-//    }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/profile")

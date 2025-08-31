@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @Data
@@ -38,9 +36,4 @@ public class ProductInCart {
     @Column(name = "product_id", insertable = false, updatable = false)
     private Integer productId;
 
-
-    // Optional: helper method to get a composite string id (cart-product)
-    public String getCompositeId() {
-        return cart.getCartId() + "-" + product.getId();
-    }
 }

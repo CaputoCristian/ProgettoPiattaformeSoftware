@@ -18,9 +18,6 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    //@Autowired
-    //private ShopRepository shopRepository;
-
     @Transactional(readOnly = true)
     public List<User> showAllUsers() {
         return userRepository.findAll();
@@ -32,9 +29,7 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new EmailAlreadyExistException("Email already exist");
         }
-//        if (userRepository.existsByCf(user.getCf())) {
-//            throw new CfAlreadyExistException("CF already exist");
-//        }
+
         userRepository.save(user);
         return user;
     }

@@ -28,31 +28,11 @@ public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
 
-
-
-    ///  Non necessario
-//    @PostMapping
-//    public ResponseEntity addPurchase(@RequestBody Purchase purchase) {
-//        Purchase addedPurchase = purchaseService.addPurchase(purchase); //Non serve tornare l'utente se si ha il .ok (lazy method)
-//        return ResponseEntity.ok(addedPurchase);
-//    }
-
-
-//    @PreAuthorize("isAuthenticated()")
-//    @GetMapping("/getAll")
-//    public ResponseEntity showAllPurchase(Authentication authentication) { //Prende id utente
-//        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
-//
-//        List<Purchase> purchases = purchaseService.showAllPurchase(email);
-//
-//        return ResponseEntity.ok(purchases);
-//
-//    }
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/getAll")
     public ResponseEntity<List<PurchaseDTO>> getAllPurchases(Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
+
         try {
             List<PurchaseDTO> acquisti = purchaseService.getAllPurchasesForUser(email);
             return ResponseEntity.ok(acquisti);
@@ -76,12 +56,6 @@ public class PurchaseController {
     @GetMapping("/{id}")
     public ResponseEntity getPurchase(@PathVariable Long id, Authentication authentication) {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
-
-//        Optional<Purchase> result = purchaseService.showById(id);
-//        if ( result.getBuyer().getEmail == email ) {
-//            return new ResponseEntity<>("No results!", HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>(result, HttpStatus.OK);
 
         Purchase purchase = purchaseService.showById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Ordine non trovato"));

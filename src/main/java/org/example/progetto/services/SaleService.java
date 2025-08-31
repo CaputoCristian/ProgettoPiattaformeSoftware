@@ -64,17 +64,6 @@ public class SaleService {
         saleRepository.save(sale);
     }
 
-//    public List<Purchase> showAllSalesBetween(long userId, LocalDateTime startTime, LocalDateTime endTime, int pageNumber, int pageSize, String sortBy) {
-//        Pageable paging = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy));
-//        Page<Purchase> pagedResult = saleRepository.findBySeller_IdAndTimeBetween(userId, startTime, endTime,paging);
-//        if ( pagedResult.hasContent() ) {
-//            return pagedResult.getContent();
-//        }
-//        else {
-//            return new ArrayList<>();
-//        }
-//    }
-
     @Transactional(readOnly = true)
     public List<SaleDTO> getAllSalesForUser(String email) throws UserNotFoundException {
         User user = userRepository.findByEmail(email);

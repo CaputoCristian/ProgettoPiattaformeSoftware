@@ -28,9 +28,6 @@ public class SaleController {
     @Autowired
     private SaleService saleService;
 
-
-    //TODO vedi cosa restituisce sto metodo.
-
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{id}/check")
     public ResponseEntity<Void> toggleCheck(@PathVariable Long id, Authentication authentication) {
@@ -49,25 +46,6 @@ public class SaleController {
 
     }
 
-    ///  Non necessario
-//    @PostMapping
-//    public ResponseEntity addPurchase(@RequestBody Purchase purchase) {
-//        Purchase addedPurchase = purchaseService.addPurchase(purchase); //Non serve tornare l'utente se si ha il .ok (lazy method)
-//        return ResponseEntity.ok(addedPurchase);
-//    }
-
-
-//    @PreAuthorize("isAuthenticated()")
-//    @GetMapping("/getAll")
-//    public ResponseEntity showAllPurchase(Authentication authentication) { //Prende id utente
-//        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
-//
-//        List<Purchase> purchases = purchaseService.showAllPurchase(email);
-//
-//        return ResponseEntity.ok(purchases);
-//
-//    }
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/getAll")
     public ResponseEntity<List<SaleDTO>> getAllSales(Authentication authentication) {
@@ -79,18 +57,6 @@ public class SaleController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
-
-
-//    @GetMapping("/allPurchase/paged")
-//    public ResponseEntity getAll(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, @RequestParam(value = "sortBy", defaultValue = "id") String sortBy, Authentication authentication) {
-//        String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
-//
-//        List<Purchase> result = saleService.showAllSales(email,pageNumber, pageSize, sortBy);
-//        if ( result.size() <= 0 ) {
-//            return new ResponseEntity<>("No results!", HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>(result, HttpStatus.OK);
-//    }
 
     @GetMapping("/{id}")
     public ResponseEntity getSale(@PathVariable Long id, Authentication authentication) {
@@ -106,17 +72,6 @@ public class SaleController {
         return new ResponseEntity<>(sale, HttpStatus.OK);
 
     }
-
-
-//    @GetMapping("/{id}/filtered")
-//    public ResponseEntity getAllBetween(@PathVariable Long id, @RequestBody LocalDateTime startDate, @RequestBody LocalDateTime endDate, @RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber, @RequestParam(value = "pageSize", defaultValue = "10") int pageSize, @RequestParam(value = "sortBy", defaultValue = "id") String sortBy) {
-//        List<Purchase> result = saleService.showAllSalesBetween(id, startDate, endDate, pageNumber, pageSize, sortBy);
-//        if ( result.size() <= 0 ) {
-//            return new ResponseEntity<>("No results!", HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>(result, HttpStatus.OK);
-//    }
-
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/hasNotifications")

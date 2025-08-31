@@ -5,7 +5,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Collection;
-import java.util.Date;
 
 public class CustomJwt extends JwtAuthenticationToken {
 
@@ -20,8 +19,6 @@ public class CustomJwt extends JwtAuthenticationToken {
     private String telephoneNumber;
 
     private String birthDate;
-
-    //TODO altri campi
 
     public CustomJwt(Jwt jwt, Collection<? extends GrantedAuthority> authorities) {
         super(jwt, authorities);

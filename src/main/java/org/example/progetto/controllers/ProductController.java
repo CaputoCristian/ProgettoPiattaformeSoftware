@@ -2,13 +2,9 @@ package org.example.progetto.controllers;
 
 import jakarta.validation.Valid;
 import org.example.progetto.DTO.ProductUpdateRequest;
-import org.example.progetto.DTO.UserUpdateRequest;
 import org.example.progetto.entities.Product;
-import org.example.progetto.entities.Shop;
-import org.example.progetto.entities.User;
 import org.example.progetto.exceptions.*;
 import org.example.progetto.services.ProductService;
-import org.example.progetto.services.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,18 +28,6 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ShopService shopService;
-
-//    @PostMapping("/addProduct")
-//    public ResponseEntity addProduct(@RequestBody Product product) {
-//        try {
-//            Product addedProduct = productService.addProduct(product); //Non serve tornare l'utente se si ha il .ok (lazy method)
-//            return ResponseEntity.ok(addedProduct);
-//        } catch (BarcodeAlreadyExistException e) {
-//            return new ResponseEntity<>("Barcode already exist", HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/addProduct")
@@ -51,8 +35,6 @@ public class ProductController {
         String email = ((JwtAuthenticationToken) authentication).getToken().getClaimAsString("email");
 
         try {
-//            Shop shop = shopService.getShopByUserEmail(email);
-//            System.out.println("Shop trovato");
             Product addedProduct = productService.addProduct(email, request);
 
             return ResponseEntity.ok(addedProduct);

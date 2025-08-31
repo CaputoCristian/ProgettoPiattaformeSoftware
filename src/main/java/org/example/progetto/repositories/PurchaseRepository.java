@@ -1,6 +1,5 @@
 package org.example.progetto.repositories;
 
-import org.example.progetto.entities.Product;
 import org.example.progetto.entities.Purchase;
 import org.example.progetto.entities.User;
 import org.springframework.data.domain.Page;

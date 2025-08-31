@@ -55,18 +55,6 @@ public class ShopService {
         return shopRepository.findBySeller(seller).getProducts();
     }
 
-//    public Shop getShopByUserEmail(String email) throws UserNotFoundException {
-//        User user = userRepository.findByEmail(email);
-//        if (user == null) {
-//            throw new UserNotFoundException("User not found");
-//        }
-//        Shop shop = shopRepository.findBySeller(user);
-//        if (shop == null) {
-//            throw new EntityNotFoundException("Shop not found for user");
-//        }
-//        return shop;
-//    }
-
     public Shop getShopByUserEmail(String email) {
         return shopRepository.findBySellerEmail(email)
                 .orElseThrow(() -> new ShopNotFoundException("Nessuno shop associato all'email: " + email));

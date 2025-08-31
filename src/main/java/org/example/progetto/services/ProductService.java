@@ -116,27 +116,6 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-//    public List<Product> searchByMultipleKeywords(String query) {
-//        String[] words = query.toLowerCase().split("\\s+");
-//        Set<Product> results = new HashSet<>();
-//
-//        for (String word : words) {
-//            results.addAll(productRepository.searchByKeyword(word));
-//        }
-//
-//        return new ArrayList<>(results);
-//    }
-//
-//    public List<Product> advancedSearch(String query, Float minPrice, Float maxPrice, boolean availableOnly) {
-//        List<Product> base = searchByMultipleKeywords(query);
-//
-//        return base.stream()
-//                .filter(p -> minPrice == null || p.getPrice() >= minPrice)
-//                .filter(p -> maxPrice == null || p.getPrice() <= maxPrice)
-//                .filter(p -> !availableOnly || p.getQuantity() != null && p.getQuantity() > 0)
-//                .collect(Collectors.toList());
-//    }
-
     @Transactional
     public void deleteProduct(String email, Long productId) throws InvalidOperationException, ProductNotFoundException {
 

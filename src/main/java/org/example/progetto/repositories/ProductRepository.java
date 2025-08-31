@@ -15,17 +15,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByPriceBetween(Float minPrice, Float maxPrice);
     Product findById(Integer id);
 
-//    @Query("SELECT p FROM Product p WHERE " +
-//            "(:keywords) IS NULL OR (" +
-//            "  " +
-//            "  (" +
-//            "    LOWER(p.name) LIKE %:kw% OR " +
-//            "    LOWER(p.description) LIKE %:kw% OR " +
-//            "    LOWER(p.brand) LIKE %:kw%" +
-//            "  )" +
-//            ")")
-//    List<Product> searchByKeyword(@ng sParam("kw"String word) String keyword);
-
     @Query("""
         SELECT p FROM Product p
         WHERE 

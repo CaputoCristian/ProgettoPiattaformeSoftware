@@ -39,10 +39,6 @@ public class Product {
     @Column(name = "description", nullable = true, length = 500)
     private String description;
 
-//    @Basic
-//    @Column(name = "price", nullable = true)
-//    private Float price;
-
     @Basic
     @Column(name ="price", precision = 10, scale = 2)
     private BigDecimal price = BigDecimal.ZERO;

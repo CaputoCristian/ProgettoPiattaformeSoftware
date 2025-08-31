@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: Progetto
+  datasource:
+    url: jdbc:mysql://localhost:3306/orders
+    username: adminadmin
+    password: admin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+  sql:
+    init:
+      mode: never
+      schema-locations: classpath:other/database_mysql.sql
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/myrealm
+          jwk-set-uri: http://localhost:8080/realms/myrealm/protocol/openid-connect/certs
+      client:
+        registration:
+          keycloak:
+            client-id: spring-app
+            client-secret: Wd4jw3Pk3lj6s4xTr5sPM7mQL1RdKDrl
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/myrealm
+  jackson:
+    time-zone: Europe/Rome
+
+server:
+  port: 8081
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: TRACE

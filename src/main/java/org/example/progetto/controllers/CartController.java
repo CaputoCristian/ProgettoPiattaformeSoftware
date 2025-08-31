@@ -56,10 +56,7 @@ public class CartController {
             return creaRisposta("Prodotto non trovato.", HttpStatus.NOT_FOUND);
         } catch (InvalidQuantityException e) {
             return creaRisposta(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } //catch (Exception e) {
-        // e.printStackTrace(); // Log dell'errore per il debugging
-        // return creaRisposta("Errore interno del server.", HttpStatus.INTERNAL_SERVER_ERROR);
-
+        }
     }
 
     //Si invia una risposta html e non direttamente la stringa, altrimenti si avrebbe un errore lato frontend
@@ -68,7 +65,6 @@ public class CartController {
         response.put("message", message);
         return ResponseEntity.status(status).body(response);
     }
-
 
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/removeAll")
@@ -88,7 +84,6 @@ public class CartController {
             throw new RuntimeException(e);
         }
     }
-
 
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/removeItem")
@@ -117,7 +112,6 @@ public class CartController {
         }
     }
 
-    // Diminuisce la quantità di un prodotto nel carrello
     @PutMapping("/minus")
     public ResponseEntity<Map<String, String>> decreaseProductQuantity(
             @RequestParam @NotNull @Positive int idProdotto, Authentication authentication) {
@@ -139,8 +133,6 @@ public class CartController {
         }
     }
 
-
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/items")
     public ResponseEntity<List<ProductInCartDTO>> getCartItems(Authentication authentication) {
@@ -157,8 +149,6 @@ public class CartController {
         }
     }
 
-
-    // Effettua un ordine
     @PostMapping("/buy")
     public ResponseEntity<Map<String, String>> buyCart(@RequestParam @NotNull @Min(1) int metodoPagamento, @RequestParam @NotNull String indirizzoSpedizione, Authentication authentication) {
 
@@ -182,9 +172,6 @@ public class CartController {
         }
     }
 
-
-
-    // Aumento la quantità di un prodotto nel carrello (plus adding)
     @PutMapping("/plus")
     public ResponseEntity<Map<String, String>> incrementProductQuantity(
             @RequestParam @NotNull @Positive int idProdotto, Authentication authentication) {
@@ -212,7 +199,5 @@ public class CartController {
             throw new RuntimeException(e);
         }
     }
-
-
 
 }
