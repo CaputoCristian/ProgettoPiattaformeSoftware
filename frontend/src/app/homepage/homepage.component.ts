@@ -74,7 +74,7 @@ export class HomepageComponent implements OnInit {
   }
 
   addToCart(productId: number): void {
-    this.CartService.aggiungiAlCarrello(productId).subscribe(
+    this.CartService.addToCart(productId).subscribe(
       response => {
         console.log('Successo:', response);
         alert('Prodotto aggiunto al carrello con successo.');
@@ -86,5 +86,5 @@ export class HomepageComponent implements OnInit {
     );
   }
 
-  
+
 }

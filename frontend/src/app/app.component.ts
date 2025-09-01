@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
     this.oauthService.logOut();
   }
 
-  //Non avendo più un header component, purtroppo la search va implementata qua
+  //Non avendo più un header component, la search va implementata qua
   onSearch(): void {
     this.searchService.search();
   }

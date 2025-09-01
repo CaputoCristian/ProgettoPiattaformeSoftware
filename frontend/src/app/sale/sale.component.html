@@ -19,12 +19,12 @@
                 Vendita #{{ sale.id }}
               </h5>
               <label>
+                Ordine elaborato
                 <input
                   type="checkbox"
                   [checked]="sale.check"
                   (change)="toggleCheck(sale)"
                 />
-                Visualizzato
               </label>
               <small class="text-muted">{{ sale.date | date: 'medium' }}</small>
             </div>

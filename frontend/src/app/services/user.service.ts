@@ -17,7 +17,7 @@ export interface UserProfileDTO {
 })
 export class UserService {
 
-  private baseUrl = 'http://localhost:8081'; //TODO controlla backend
+  private baseUrl = 'http://localhost:8081';
 
   constructor(private httpClient: HttpClient, private oauthService: OAuthService) { }
 

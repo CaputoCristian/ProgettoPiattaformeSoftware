@@ -132,7 +132,6 @@ export class MarketplaceComponent implements OnInit{
     this.selectedProduct = null;
   }
 
-
   deleteProduct(productId: number): void {
     if (confirm('Sei sicuro di voler eliminare questo prodotto?')) {
       this.ProductService.deleteProduct(productId).subscribe({

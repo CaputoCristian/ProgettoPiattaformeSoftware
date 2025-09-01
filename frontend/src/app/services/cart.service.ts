@@ -45,8 +45,7 @@ export class CartService {
     );
   }
 
-
-  aggiungiAlCarrello(idProdotto: number): Observable<any> {
+  addToCart(idProdotto: number): Observable<any> {
     const params = { idProdotto: idProdotto.toString() };
     return this.httpClient.post(
       `${this.baseUrl}/add`,
@@ -60,7 +59,6 @@ export class CartService {
       })
     );
   }
-
 
   plusAdding(idProdotto: number): Observable<any> {
     const params = { idProdotto: idProdotto.toString() };
@@ -92,7 +90,7 @@ export class CartService {
     );
   }
 
-  rimuoviDalCarrello(idProdotto: number): Observable<any> {
+  removeItem(idProdotto: number): Observable<any> {
     return this.httpClient.delete(
       `${this.baseUrl}/removeItem?idProdotto=${idProdotto}`,
       {headers: this.getHeaders()}
@@ -105,7 +103,7 @@ export class CartService {
     );
   }
 
-  svuotaCarrello(): Observable<any> {
+  emptyCart(): Observable<any> {
     return this.httpClient.delete(
       `${this.baseUrl}/removeAll`,
       { headers: this.getHeaders() }
@@ -118,7 +116,7 @@ export class CartService {
     );
   }
 
-  ordina(metodoPagamento: number, indirizzoSpedizione: string): Observable<any> {
+  buyCart(metodoPagamento: number, indirizzoSpedizione: string): Observable<any> {
     const params = {
       metodoPagamento: metodoPagamento.toString(),
       indirizzoSpedizione

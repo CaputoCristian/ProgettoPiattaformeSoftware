@@ -56,7 +56,6 @@ export class CartComponent implements OnInit, OnDestroy {
     }, 30000);
   }
 
-
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
@@ -97,13 +96,10 @@ export class CartComponent implements OnInit, OnDestroy {
       });
   }
 
-
-
   calculateTotal(): void {
     this.totalAmount = this.cartItems.reduce((acc, item) =>
       acc + (item.price * item.quantity), 0);
   }
-
 
   increaseQuantity(idProdotto: number): void {
     this.cartService.plusAdding(idProdotto).subscribe(
@@ -135,9 +131,8 @@ export class CartComponent implements OnInit, OnDestroy {
       });
   }
 
-
   removeItem(productId: number) {
-    this.cartService.rimuoviDalCarrello(productId)
+    this.cartService.removeItem(productId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -150,10 +145,8 @@ export class CartComponent implements OnInit, OnDestroy {
       });
   }
 
-
-
   emptyCart() {
-    this.cartService.svuotaCarrello()
+    this.cartService.emptyCart()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -166,14 +159,13 @@ export class CartComponent implements OnInit, OnDestroy {
       });
   }
 
-
   placeOrder(): void {
     if (!this.indirizzoSpedizione) {
       alert('Per favore, inserisci un indirizzo di spedizione.');
       return;
     }
 
-    this.cartService.ordina(this.metodoPagamento, this.indirizzoSpedizione).subscribe(
+    this.cartService.buyCart(this.metodoPagamento, this.indirizzoSpedizione).subscribe(
       response => {
         alert('Ordine effettuato con successo.');
         this.cartItems = [];
